@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  
+  private int stallCounter = 0;
 
   private RobotContainer m_robotContainer;
 
@@ -77,11 +79,25 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    
+    m_robotContainer.returnAhrs().calibrate();
+
+
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if(stallCounter == 5){
+      System.out.print("The current angle is: " + m_robotContainer.returnAhrs().getAngle());
+      System.out.print("The current altitude is: " + m_robotContainer.returnAhrs().getAltitude());
+      System.out.print("The current compass heading is: " + m_robotContainer.returnAhrs().getCompassHeading());
+      System.out.print("The current pitch is: " + m_robotContainer.returnAhrs().getPitch());
+      stallCounter = 0;
+    } else {
+      stallCounter++;
+    }
+  }
 
   @Override
   public void testInit() {
