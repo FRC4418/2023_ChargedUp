@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -68,7 +69,13 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    System.out.print("The current angle is: " + m_robotContainer.returnAhrs().getAngle());
+    System.out.print("The current altitude is: " + m_robotContainer.returnAhrs().getAltitude());
+    System.out.print("The current compass heading is: " + m_robotContainer.returnAhrs().getCompassHeading());
+    System.out.print("The current pitch is: " + m_robotContainer.returnAhrs().getPitch());
+    
+  }
 
   @Override
   public void teleopInit() {
@@ -81,6 +88,7 @@ public class Robot extends TimedRobot {
     }
     
     m_robotContainer.returnAhrs().calibrate();
+    
 
 
   }
@@ -88,15 +96,10 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if(stallCounter == 5){
       System.out.print("The current angle is: " + m_robotContainer.returnAhrs().getAngle());
       System.out.print("The current altitude is: " + m_robotContainer.returnAhrs().getAltitude());
       System.out.print("The current compass heading is: " + m_robotContainer.returnAhrs().getCompassHeading());
       System.out.print("The current pitch is: " + m_robotContainer.returnAhrs().getPitch());
-      stallCounter = 0;
-    } else {
-      stallCounter++;
-    }
   }
 
   @Override
