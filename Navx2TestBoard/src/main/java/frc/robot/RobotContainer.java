@@ -31,21 +31,22 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   //create a new navx object
-  private static final AHRS ahrs = new AHRS();
+  //public AHRS ahrs = new AHRS();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   //returns the navX object
-  public AHRS returnAhrs(){
-    return ahrs;
-  }
+  // public AHRS returnAhrs(){
+  //   return ahrs;
+  // }
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    System.out.println("TESTTESTTESTTESTTESTTESTTEST");
   }
 
   private void configureBindings() {
