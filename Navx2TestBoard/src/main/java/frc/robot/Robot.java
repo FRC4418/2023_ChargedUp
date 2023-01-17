@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import com.kauailabs.navx.frc.AHRS;
+import frc.robot.commands.tippedBackwards;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,7 +21,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   
   private int stallCounter = 0;
-  public AHRS ahrs = new AHRS();
+  public static AHRS ahrs = new AHRS();
 
   private RobotContainer m_robotContainer;
 
@@ -63,18 +64,12 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    
   }
 
   @Override
