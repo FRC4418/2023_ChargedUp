@@ -112,9 +112,16 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     SmartDashboard.putNumber("navX Angle", (double) ahrs.getAngle());
-    SmartDashboard.putNumber("navX Altitude", (double) ahrs.getAltitude());
+    //SmartDashboard.putNumber("navX Altitude", (double) ahrs.getAltitude());
     SmartDashboard.putNumber("navX Heading", (double) ahrs.getCompassHeading());
     SmartDashboard.putNumber("navX Pitch", (double) ahrs.getPitch());
+    //SmartDashboard.putNumber("navX Barometric pressure", (double) ahrs.getBarometricPressure());
+    //SmartDashboard.putNumber("navX Displacement X", (double) ahrs.getDisplacementX());
+    //SmartDashboard.putNumber("navX Accel X", (double) ahrs.getRawAccelX());
+    SmartDashboard.putNumber("navX Roll", (double) ahrs.getRoll());
+    //SmartDashboard.putNumber("navX Velocity X", (double) ahrs.getVelocityX());
+    SmartDashboard.putNumber("navX Yaw", (double) ahrs.getYaw());
+    //SmartDashboard.putNumber("navX Temperature", (double) ahrs.getTempC());
   }
 
   @Override
