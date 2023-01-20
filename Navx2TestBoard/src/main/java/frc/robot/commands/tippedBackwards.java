@@ -16,57 +16,73 @@ public class tippedBackwards extends CommandBase {
     private DriveSubsystem driveTrain;
     private float currentPitch;
     private double pitchThreshhold = 0.6;
-    private double c;
+    private double velocity;
     private boolean isFinished;
-    private int z=100;
-  /** Creates a new tippedBackwards. */
-  public tippedBackwards(DriveSubsystem driveTrain) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    this.driveTrain = driveTrain;
-    addRequirements(driveTrain);
+    private int z = 100;
 
-  }
+    /** Creates a new tippedBackwards. */
+    public tippedBackwards(DriveSubsystem driveTrain) {
+        // Use addRequirements() here to declare subsystem dependencies.
+        this.driveTrain = driveTrain;
+        addRequirements(driveTrain);
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    isFinished = false;
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    currentPitch = Robot.ahrs.getPitch();
-
-    if(Math.abs(currentPitch) > pitchThreshhold){
-        c=(-currentPitch/62);
-        driveTrain.setVelocity(c);
-    } else if(currentPitch > pitchThreshhold && currentPitch < 0.9){
-        c = -c;
-        driveTrain.setVelocity(c);
     }
-    
-    else {
-        if(z==100){
-            driveTrain.stop();
-            z=0;
-        }
-        else{
-            z+=1;
-        }
-        isFinished = true;
+
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        isFinished = false;
     }
-  } 
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
 
-  }
+        currentPitch = Robot.ahrs.getPitch();
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return isFinished;
-  }
+        if (Math.abs(currentPitch) > pitchThreshhold) {
+            
+            velocity = (-(currentPitch) / 62);
+            driveTrain.setVelocity(velocity);
+
+        } 
+        else if (Math.abs(currentPitch) > pitchThreshhold && Math.abs(currentPitch) < 3d) {
+            
+            velocity = (-(currentPitch) / 20);
+
+        }
+        // else if(currentPitch > pitchThreshhold && currentPitch < 0.3){
+        // velocity = -velocity;
+        // driveTrain.setVelocity(velocity);
+        // }
+
+        else {
+
+            if (z == 100) {
+
+                driveTrain.stop();
+                z = 0;
+
+            } 
+            else {
+
+                z += 1;
+
+            }
+
+            isFinished = true;
+        }
+    }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
 }
