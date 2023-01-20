@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.tippedBackwards;
 import frc.robot.subsystems.DriveSubsystem;
 
+import org.photonvision.PhotonCamera;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -27,8 +29,9 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   //create a new navx object
   //public AHRS ahrs = new AHRS();
-  private final DriveSubsystem driveTrain = new DriveSubsystem();
 
+  //Drivetrain object
+  private final DriveSubsystem driveTrain = new DriveSubsystem();
 
   //returns the navX object
   // public AHRS returnAhrs(){
