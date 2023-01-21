@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -15,6 +16,7 @@ import java.lang.annotation.Target;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
+import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -35,7 +37,7 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   //Vision Stuff
-  private PhotonCamera camera = new PhotonCamera("USB_Camera");  
+  public static PhotonCamera camera = new PhotonCamera("USB_Camera");  
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -108,8 +110,10 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     var result = camera.getLatestResult();
     boolean hasTargets = result.hasTargets();
-    PhotonTrackedTarget target = result.getBestTarget();
+    final PhotonTrackedTarget target = result.getBestTarget();
     double range;
+
+    camera.setLED(VisionLEDMode.kBlink);
 
     if(hasTargets == true){
       System.out.println("There are targets in the image");
@@ -117,7 +121,12 @@ public class Robot extends TimedRobot {
       System.out.println("The Area of the target is: " + target.getArea());
       System.out.println("The Pitch to the target is: " + target.getPitch());
 
-      range = PhotonUtils.calculateDistanceToTargetMeters(1, 1, 0, 0);
+      range = PhotonUtils.calculateDistanceToTargetMeters(0.65, 1.0, Units.degreesToRadians (-7.3), Units.degreesToRadians(target.getPitch()));
+      
+
+      SmartDashboard.putNumber("AprilTag Pitch", target.getPitch());
+      SmartDashboard.putNumber("AprilTag ID", target.getFiducialId());
+      SmartDashboard.putNumber("Distance to the Target", range);
     } else {
       System.out.println("There are NOT targets in the image");
     }

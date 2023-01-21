@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.rangedDrive;
 import frc.robot.commands.tippedBackwards;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -47,7 +48,8 @@ public class RobotContainer {
   }
 
   private void configureDefaultCommands() {
-    driveTrain.setDefaultCommand(new tippedBackwards(driveTrain));
+    //driveTrain.setDefaultCommand(new tippedBackwards(driveTrain));
+    driveTrain.setDefaultCommand(new rangedDrive(driveTrain));
   }
 
   private void configureBindings() {}
