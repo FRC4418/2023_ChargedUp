@@ -6,6 +6,9 @@ package frc.robot;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
+
+import javax.swing.text.ParagraphView;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathConstraints;
@@ -21,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -34,12 +38,13 @@ public class Robot extends TimedRobot {
   public static Trajectory trajectory = new Trajectory(); 
   public static AHRS ahrs = new AHRS();
 
-  PathPlannerTrajectory examplePath = PathPlanner.loadPath("ExampleJTurn.path", new PathConstraints(1.0, 0.5));
-
+  public static PathPlannerTrajectory Traj;
 
   private Field2d field2d;
   
   private RobotContainer m_robotContainer;
+
+  public static HashMap<String, Command> eventMap = new HashMap<>();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -48,7 +53,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
 
-    
+      eventMap.put("marker 1", new PrintCommand("Marker 1 passed"))
       
       //create Field2d object
       field2d = new Field2d();
@@ -66,7 +71,13 @@ public class Robot extends TimedRobot {
     } catch (IOException exception){
       DriverStation.reportError("Unable to open trajectory" + trajectoryJSON, exception.getStackTrace());
     }
+
+    try{Traj = PathPlanner.loadPath("ExampleJTurn", new PathConstraints(1.0,0.5));
+  } catch (Exception exception){
+    DriverStation.reportError("Unable to open trajectory", exception.getStackTrace());
   }
+  }
+
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
