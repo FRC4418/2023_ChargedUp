@@ -39,9 +39,12 @@ public class rangedDrive extends CommandBase {
   public void execute() {
 
     var result = camera.getLatestResult();
-    try{final PhotonTrackedTarget target = result.getBestTarget();currentDistance = PhotonUtils.calculateDistanceToTargetMeters(0.65, 1.0, Units.degreesToRadians(-7.3),
+    try{
+      final PhotonTrackedTarget target = result.getBestTarget();
+      currentDistance = PhotonUtils.calculateDistanceToTargetMeters(0.65, 1.0, Units.degreesToRadians(-7.3),
       Units.degreesToRadians(target.getPitch()));
-  speed = 0.1;}
+      speed = 0.1;
+    }
     catch(Exception e){System.out.println("MIHAI");}
     
 
