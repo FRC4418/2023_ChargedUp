@@ -8,6 +8,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.Constants.PhotonVisionConstants;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
@@ -23,9 +24,11 @@ public class rangedDrive extends CommandBase {
 
   /** Creates a new rangedDrive. */
   public rangedDrive(DriveSubsystem driveTrain) {
+
     // Use addRequirements() here to declare subsystem dependencies.
     this.driveTrain = driveTrain;
     addRequirements(driveTrain);
+
   }
 
   // Called when the command is initially scheduled.
@@ -38,25 +41,35 @@ public class rangedDrive extends CommandBase {
   @Override
   public void execute() {
 
+    SetPipeline(PhotonVisionConstants.aprilTagPipeline);
+
     var result = camera.getLatestResult();
-    try{
+
+    if (result.hasTargets()) {
+
       final PhotonTrackedTarget target = result.getBestTarget();
-      currentDistance = PhotonUtils.calculateDistanceToTargetMeters(0.65, 1.0, Units.degreesToRadians(-7.3),
-      Units.degreesToRadians(target.getPitch()));
+      currentDistance = PhotonUtils.calculateDistanceToTargetMeters(0.65, 1.0, Units.degreesToRadians(-7.3), Units.degreesToRadians(target.getPitch()));
       speed = 0.1;
+
     }
-    catch(Exception e){System.out.println("MIHAI");}
-    
 
     if (currentDistance > distanceThreshhold) {
-      try {
-        driveTrain.setVelocity(speed);
-      } catch (Exception failure) {
-        System.out.println("TRY EXCEPT MY BELOVED");
-      }
-    } else {
+
+      driveTrain.setVelocity(speed);
+
+    } 
+    else {
+
       driveTrain.stop();
+
     }
+
+  }
+
+  public void SetPipeline(int pipeline) {
+
+    camera.setPipelineIndex(pipeline);
+
   }
 
   // Called once the command ends or is interrupted.

@@ -68,4 +68,13 @@ public final class Constants {
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = 0.7;
   }
+
+  public static final class PhotonVisionConstants {
+
+    public static final int conePipeline = 0;
+    public static final int cubePipeline = 1;
+    public static final int aprilTagPipeline = 2;
+
+  }
+
 }
