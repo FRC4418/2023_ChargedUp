@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveSubsystem;
@@ -16,6 +17,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class rangedDrive extends CommandBase {
+
   private DriveSubsystem driveTrain;
   private double distanceThreshhold = 1.8;
   private double currentDistance;
@@ -48,6 +50,36 @@ public class rangedDrive extends CommandBase {
     if (result.hasTargets()) {
 
       final PhotonTrackedTarget target = result.getBestTarget();
+
+      if (GetPipeline() == PhotonVisionConstants.aprilTagPipeline) {
+
+        int aprilTagId = target.getFiducialId();
+
+        SmartDashboard.putNumber("Apriltag ID: ", (double) aprilTagId);
+
+        if (aprilTagId >= 1 || aprilTagId <= 3) {
+
+          SmartDashboard.putString("Area: ", "Red Alliance Community");
+
+        }
+        else if (aprilTagId >= 6 || aprilTagId <= 8) {
+
+          SmartDashboard.putString("Area: ", "Blue Alliance Community");
+
+        }
+        else if (aprilTagId == 4) {
+
+          SmartDashboard.putString("Area: ", "Blue Alliance Loading Zone");
+
+        }
+        else if (aprilTagId == 5) {
+
+          SmartDashboard.putString("Area: ", "Red Alliance Loading Zone");
+
+        }
+
+      }
+
       currentDistance = PhotonUtils.calculateDistanceToTargetMeters(0.65, 1.0, Units.degreesToRadians(-7.3), Units.degreesToRadians(target.getPitch()));
       speed = 0.1;
 
@@ -72,14 +104,22 @@ public class rangedDrive extends CommandBase {
 
   }
 
+  public int GetPipeline() {
+
+    return camera.getPipelineIndex();
+
+  }
+
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+
     return false;
+
   }
+
 }
