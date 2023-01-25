@@ -43,7 +43,7 @@ public class rangedDrive extends CommandBase {
 
     SetPipeline(PhotonVisionConstants.aprilTagPipeline);
 
-    var result = camera.getLatestResult();
+    PhotonPipelineResult result = camera.getLatestResult();
 
     if (result.hasTargets()) {
 
