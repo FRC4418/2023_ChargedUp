@@ -4,6 +4,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -12,10 +22,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import java.io.IOException;
 import java.lang.annotation.Target;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -29,6 +42,11 @@ import frc.robot.commands.tippedBackwards;
  * project.
  */
 public class Robot extends TimedRobot {
+  // private static final PoseStrategy PoseStrategy;
+  
+
+  private static AprilTagFieldLayout aprilTagFieldLayout;
+
   private Command m_autonomousCommand;
   
   private int stallCounter = 0;
@@ -36,9 +54,15 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  //Vision Stuff
-  public static PhotonCamera camera = new PhotonCamera("USB_Camera");  
+  public static PhotonPoseEstimator m_poseEstimator;
 
+  public static PoseStrategy poseStrategy;
+
+  public static PhotonCamera camera;
+
+  public static DifferentialDrivePoseEstimator estimator;
+  //Vision Stuff
+ 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -50,7 +74,34 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     ahrs.calibrate();
     System.out.println("NAVX STARTEDNAVX STARTEDNAVX STARTEDNAVX STARTEDNAVX STARTEDNAVX STARTED");
-  }
+
+    try{
+      aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+      } catch(IOException exception){
+    
+      }
+
+      camera = new PhotonCamera("USB_Camera");
+  
+      Transform3d cameraToDrivetrain = new Transform3d(new Translation3d(0.56,0.25,0), new Rotation3d(0,0,0));
+    
+      m_poseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, poseStrategy.AVERAGE_BEST_TARGETS, camera, cameraToDrivetrain);
+
+      // estimator = new DifferentialDrivePoseEstimator(ahrs.getAngle(), m_robotContainer.driveTrain.getLeftEncoder(), m_robotContainer.driveTrain.getRightEncoder(), new Pose2d(), 
+      // VecBuilder.fill(0.05,0.05,Units.degreesToRadians(5),0.01,0.01),
+      // VecBuilder.fill(0.02,0.02, Units.degreesToRadians(1)),
+      // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)))
+      // );
+      estimator = new DifferentialDrivePoseEstimator(
+        m_robotContainer.driveTrain.kinematics, 
+        ahrs.getRotation2d(), 
+        m_robotContainer.driveTrain.getLeftEncoder().getDistance(), 
+        m_robotContainer.driveTrain.getRightEncoder().getDistance(), 
+        m_robotContainer.driveTrain.getPose()
+        );
+    }
+      
+  
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -78,12 +129,43 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-
+    
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    var result = camera.getLatestResult();
+    boolean hasTarget = result.hasTargets();
+    //PhotonTrackedTarget target = result.getBestTarget();
+
+
+    if(hasTarget){
+    var imageCaptureTime = result.getTimestampSeconds();
+    var camToTargetTranslation = result.getBestTarget().getBestCameraToTarget();
+    var camPose =  Constants.kFarTargetPose.transformBy(camToTargetTranslation.inverse());
+    //m_poseEstimator.
+    estimator.addVisionMeasurement(camPose.transformBy(Constants.kCameraToRobot).toPose2d(), imageCaptureTime);
+    
+    estimator.update(ahrs.getRotation2d(), m_robotContainer.driveTrain.getLeftEncoder().getDistance(), m_robotContainer.driveTrain.getRightEncoder().getDistance());
+
+    double measuredDistanceX = estimator.getEstimatedPosition().getX();
+    double adjustedDistanceX = estimator.getEstimatedPosition().getX() + 0.24*estimator.getEstimatedPosition().getX()-0.1114;
+
+    double measuredDistanceY = estimator.getEstimatedPosition().getY();
+    double adjustedDistanceY = estimator.getEstimatedPosition().getY() + 0.24*estimator.getEstimatedPosition().getX()-0.1114;
+
+
+
+    SmartDashboard.putNumber("Pose X Value", adjustedDistanceX);
+    SmartDashboard.putNumber("Pose Y Value", adjustedDistanceY);
+
+    SmartDashboard.putString("ToString of Translation", estimator.getEstimatedPosition().toString());
+
+    SmartDashboard.putString("ToString of Current Pose", m_robotContainer.driveTrain.getPose().toString());
+    }
   }
 
   @Override
@@ -109,30 +191,53 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     var result = camera.getLatestResult();
-    boolean hasTargets = result.hasTargets();
-    final PhotonTrackedTarget target = result.getBestTarget();
-    double range;
+    boolean hasTarget = result.hasTargets();
+    //PhotonTrackedTarget target = result.getBestTarget();
 
-    camera.setLED(VisionLEDMode.kBlink);
 
-    if(hasTargets == true){
-      System.out.println("There are targets in the image");
-      System.out.println("The ID of the apriltag is: " + target.getFiducialId());
-      System.out.println("The Area of the target is: " + target.getArea());
-      System.out.println("The Pitch to the target is: " + target.getPitch());
+    if(hasTarget){
+    var imageCaptureTime = result.getTimestampSeconds();
+    var camToTargetTranslation = result.getBestTarget().getBestCameraToTarget();
+    var camPose =  Constants.kFarTargetPose.transformBy(camToTargetTranslation.inverse());
+    //m_poseEstimator.
+    estimator.addVisionMeasurement(camPose.transformBy(Constants.kCameraToRobot).toPose2d(), imageCaptureTime);
+    
+    estimator.update(ahrs.getRotation2d(), m_robotContainer.driveTrain.getLeftEncoder().getDistance(), m_robotContainer.driveTrain.getRightEncoder().getDistance());
 
-      range = PhotonUtils.calculateDistanceToTargetMeters(0.65, 1.0, Units.degreesToRadians (-7.3), Units.degreesToRadians(target.getPitch()));
-      
+    double measuredDistanceX = estimator.getEstimatedPosition().getX();
+    double adjustedDistanceX = estimator.getEstimatedPosition().getX() + 0.24*estimator.getEstimatedPosition().getX()-0.1114;
 
-      SmartDashboard.putNumber("AprilTag Pitch", target.getPitch());
-      SmartDashboard.putNumber("AprilTag ID", target.getFiducialId());
-      SmartDashboard.putNumber("Distance to the Target", range);
-    } else {
-      System.out.println("There are NOT targets in the image");
+    double measuredDistanceY = estimator.getEstimatedPosition().getY();
+    double adjustedDistanceY = estimator.getEstimatedPosition().getY() + 0.24*estimator.getEstimatedPosition().getX()-0.1114;
+
+
+
+    SmartDashboard.putNumber("Pose X Value", adjustedDistanceX);
+    SmartDashboard.putNumber("Pose Y Value", adjustedDistanceY);
+
+    SmartDashboard.putString("ToString of Translation", estimator.getEstimatedPosition().toString());
+
+    SmartDashboard.putString("ToString of Current Pose", m_robotContainer.driveTrain.getPose().toString());
+    
+      //double targetYaw  = target.getYaw();
+
+    // double range = PhotonUtils.calculateDistanceToTargetMeters(0.59, 0.51, Units.degreesToRadians(0), 0);
+
+    // SmartDashboard.putBoolean("Has Target", hasTarget);
+    // SmartDashboard.putNumber("AprilTag ID", target.getFiducialId());
+    // SmartDashboard.putNumber("Target Yaw", targetYaw);
+    // SmartDashboard.putNumber("Inverse Yaw", -targetYaw);
+
+    // SmartDashboard.putNumber("Default Distance to target", range);
+    // double adjustedRange = 0.24*range-0.0114;
+    // SmartDashboard.putNumber("Adjusted Distance", range + adjustedRange);
+
+
     }
 
-    
-  }
+}
+
+
 
   @Override
   public void testInit() {

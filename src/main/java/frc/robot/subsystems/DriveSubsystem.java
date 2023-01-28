@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 //import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -30,6 +31,9 @@ public class DriveSubsystem extends SubsystemBase {
   final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(4);
   final WPI_TalonFX rightBackMotor = new WPI_TalonFX(5);
   MotorControllerGroup m_rightMotors = new MotorControllerGroup(rightFrontMotor, rightBackMotor);
+
+  //kinematics
+  public final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.63);
 
   // The robot's drive
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
@@ -112,7 +116,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
     //m_odometry.resetPosition(pose, m_gyro.getRotation2d());
-    m_odometry.resetPosition(null, getHeading(), getAverageEncoderDistance(), pose);
+    m_odometry.resetPosition(ahrs.getRotation2d(), getHeading(), getAverageEncoderDistance(), pose);
   }
 
   /**
