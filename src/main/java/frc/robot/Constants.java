@@ -74,6 +74,14 @@ public final class Constants {
     public static final double kRamseteZeta = 0.7;
   }
 
+  public static final class PhotonVisionConstants {
+
+    public static final int conePipeline = 0;
+    public static final int cubePipeline = 1;
+    public static final int aprilTagPipeline = 2;
+
+  }
+
 public static final Pose3d kFarTargetPose = new Pose3d(new Translation3d(Units.inchesToMeters(6.25),Units.inchesToMeters(15.13),0), new Rotation3d(0.0,0.0,Units.degreesToRadians(0)));
 //public static Transform3d kCameraToRobot;
 public static Transform3d kCameraToRobot = new Transform3d(new Translation3d(0.56,0.25,0), new Rotation3d(0,0,0));
