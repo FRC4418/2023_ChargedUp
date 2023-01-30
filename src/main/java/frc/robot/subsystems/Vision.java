@@ -1,0 +1,69 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.subsystems;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonUtils;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
+public class Vision extends SubsystemBase {
+  //create camera object
+  public static PhotonCamera camera = new PhotonCamera("USB_Camera");
+  //create AprilTagFieldLayout object to map tags to locations
+  private static AprilTagFieldLayout aprilTagFieldLayout;
+  //map camera to the drive train
+  public static Transform3d cameraToDrivetrain;
+  //create new PhotonVision Pose Estimator
+  public static PhotonPoseEstimator m_poseEstimator;
+  /** Creates a new vision. */
+  public Vision() {
+    
+    
+    //populate transform3d camera realtive to robot
+    cameraToDrivetrain = new Transform3d(
+      new Translation3d(0.56,0.25,0), 
+      new Rotation3d(0,0,0)
+      );
+  }
+
+  public Pose2d getCameraToTarget(){
+    var result = camera.getLatestResult();
+    if(result == null){
+      return null;
+    }
+    PhotonTrackedTarget target = result.getBestTarget(); 
+    if(target == null){
+      return null;
+    }
+    //create transfromToTarget using values from camera
+    Transform3d transformToTarget = target.getBestCameraToTarget();   
+    if(transformToTarget == null){
+      return null;
+    }
+    //translate 3D pose to 2D pose and returns
+    Pose2d resultPose;
+    resultPose = new Pose2d(transformToTarget.getX(), transformToTarget.getY(), transformToTarget.getRotation().toRotation2d());
+    return resultPose;
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
+}
