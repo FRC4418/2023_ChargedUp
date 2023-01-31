@@ -66,20 +66,12 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 0.2;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 0.1;
+    public static final double kMaxSpeedMetersPerSecond = 0.4;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 0.2;
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = 0.7;
-  }
-
-  public static final class PhotonVisionConstants {
-
-    public static final int conePipeline = 0;
-    public static final int cubePipeline = 1;
-    public static final int aprilTagPipeline = 2;
-
   }
 
 public static final Pose3d kFarTargetPose = new Pose3d(new Translation3d(Units.inchesToMeters(6.25),Units.inchesToMeters(15.13),0), new Rotation3d(0.0,0.0,Units.degreesToRadians(0)));
