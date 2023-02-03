@@ -7,18 +7,24 @@ package frc.robot;
 import frc.robot.subsystems.Vision;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.commands.buildTraj;
+import frc.robot.commands.BuildTraj;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Traj;
 
+import java.io.IOException;
 import java.util.List;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -32,10 +38,12 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public final Vision vision;
   public final DriveSubsystem driveTrain;
+  public final Traj traj;
 
   public RobotContainer() {
     vision = new Vision();
     driveTrain = new DriveSubsystem(vision);
+    traj = new Traj(driveTrain, vision);
 
   }
 
@@ -46,7 +54,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    //return Autos.exampleAuto(m_exampleSubsystem);
-    return new buildTraj(driveTrain, vision);
+    return new BuildTraj(driveTrain, traj);
+  
   }
 }
+

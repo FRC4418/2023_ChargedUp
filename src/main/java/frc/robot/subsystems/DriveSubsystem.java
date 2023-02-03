@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import java.time.chrono.ThaiBuddhistChronology;
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
@@ -64,9 +67,10 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRightEncoderPorts[0],
       DriveConstants.kRightEncoderPorts[1],
       DriveConstants.kRightEncoderReversed);
-
+  
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
+
 
   // vision
   private static Vision vision;
@@ -79,10 +83,10 @@ public class DriveSubsystem extends SubsystemBase {
     
   
     
-    m_rightMotors.setInverted(true);
+    //  m_rightMotors.setInverted(true);
 
     this.vision = vision;
-
+//TODO: LOOK AT INITAL POSE PASSED TO ESTIMATOR
     estimator = new DifferentialDrivePoseEstimator(
         kinematics,
         ahrs.getRotation2d(),
@@ -113,6 +117,8 @@ public class DriveSubsystem extends SubsystemBase {
     rightFrontMotor.setNeutralMode(NeutralMode.Brake);
     rightBackMotor.setNeutralMode(NeutralMode.Brake);
 
+    m_leftMotors.setInverted(true);
+
     // leftFrontMotor.setSafetyEnabled(false);
     // leftBackMotor.setSafetyEnabled(false);
     // rightFrontMotor.setSafetyEnabled(false);
@@ -128,6 +134,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
 
     resetEncoders();
+    
     m_odometry = new DifferentialDriveOdometry(ahrs.getRotation2d(), getHeading(), getAverageEncoderDistance());
   }
 
@@ -144,7 +151,10 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getPose(){
-    return estimator.getEstimatedPosition();
+    //return estimator.getEstimatedPosition();
+    //return new Pose2d();
+    //return null;
+    return m_odometry.getPoseMeters();
   }
 
   public DifferentialDriveVoltageConstraint getAutoVoltageConstraint() {
@@ -172,16 +182,6 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
     m_odometry.resetPosition(ahrs.getRotation2d(), getHeading(), getAverageEncoderDistance(), pose);
-  }
-
-  /**
-   * Drives the robot using arcade controls.
-   *
-   * @param fwd the commanded forward movement
-   * @param rot the commanded rotation
-   */
-  public void arcadeDrive(double fwd, double rot) {
-    m_drive.arcadeDrive(fwd, rot);
   }
 
   /**
@@ -261,4 +261,5 @@ public class DriveSubsystem extends SubsystemBase {
   public double getTurnRate() {
     return ahrs.getRate();
   }
+
 }
