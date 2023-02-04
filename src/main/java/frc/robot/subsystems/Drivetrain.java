@@ -8,22 +8,26 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Ports;
-import frc.robot.constants.Settings;
-import frc.robot.constants.Settings.Drivetrain.Encoders;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 // import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.stuypulse.stuylib.math.SLMath;
+import com.stuypulse.stuylib.streams.filters.WeightedMovingAverage;
 
 public class Drivetrain extends SubsystemBase {
 
-  final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(Ports.Drivetrain.LEFT_FRONT);
-  final WPI_TalonFX leftBackMotor = new WPI_TalonFX(Ports.Drivetrain.LEFT_BACK);
+  //final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(2);
+  final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(3);
+  //final WPI_TalonFX leftBackMotor = new WPI_TalonFX(3);
+  final WPI_TalonFX leftBackMotor = new WPI_TalonFX(2);
   MotorControllerGroup leftGroup = new MotorControllerGroup(leftFrontMotor, leftBackMotor);
 
-  final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(Ports.Drivetrain.RIGHT_FRONT);
-  final WPI_TalonFX rightBackMotor = new WPI_TalonFX(Ports.Drivetrain.RIGHT_BACK);
+  //final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(5);
+  final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(4);
+  //final WPI_TalonFX rightBackMotor = new WPI_TalonFX(6);
+  final WPI_TalonFX rightBackMotor = new WPI_TalonFX(5);
+
   MotorControllerGroup rightGroup = new MotorControllerGroup(rightFrontMotor, rightBackMotor);
 
   DifferentialDrive differentialDrive = new DifferentialDrive(leftGroup, rightGroup);
@@ -36,6 +40,12 @@ public class Drivetrain extends SubsystemBase {
 
 		leftBackMotor.follow(leftFrontMotor);
 		rightBackMotor.follow(rightFrontMotor);
+
+    leftFrontMotor.setInverted(true);
+    leftBackMotor.setInverted(true);
+    rightBackMotor.setInverted(false);
+    rightFrontMotor.setInverted(false);
+
 
     // Config closed-loop controls
     /*
@@ -54,19 +64,18 @@ public class Drivetrain extends SubsystemBase {
 		leftFrontMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		rightFrontMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		resetEncoders();
-
-    leftGroup.setInverted(true);
-		rightGroup.setInverted(false);
+    //leftGroup.setInverted(true);
+		//rightGroup.setInverted(false);
   }
 
 
 	// Encoder methods
   public double getLeftDistance() {
-		return leftFrontMotor.getSelectedSensorPosition() * Encoders.ENCODER_DISTANCE_PER_PULSE;
+		return leftFrontMotor.getSelectedSensorPosition();
 	}
 
 	public double getRightDistance() {
-		return rightFrontMotor.getSelectedSensorPosition() * Encoders.ENCODER_DISTANCE_PER_PULSE;
+		return rightFrontMotor.getSelectedSensorPosition();
 	}
 
 	public double getAverageDistance() {
@@ -126,7 +135,7 @@ public class Drivetrain extends SubsystemBase {
   public void impulseDrive(double xSpeed, double zRotation) {
     // If the speed is negative and the steering setpoint is small, then invert the
     // steering controls
-    if (xSpeed < -0.05 && Math.abs(zRotation) < Settings.Drivetrain.INVERT_ANGLE_THREASHOLD.get()) {
+    if (xSpeed < -0.05 && Math.abs(zRotation) < 0.15) {
       curvatureDrive(xSpeed, zRotation); // Inverted steering
     } else {
       curvatureDrive(xSpeed, -zRotation); // Standard steering
@@ -155,7 +164,7 @@ public class Drivetrain extends SubsystemBase {
 
   // Drives using curvature drive algorithm with automatic quick turn
   public void curvatureDrive(double xSpeed, double zRotation) {
-      this.curvatureDrive(xSpeed, zRotation, Settings.Drivetrain.BASE_TURNING_SPEED.get());
+      this.curvatureDrive(xSpeed, zRotation, 0.45);
   }
 
   @Override

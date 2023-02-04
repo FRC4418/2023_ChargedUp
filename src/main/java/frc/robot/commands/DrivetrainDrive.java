@@ -28,17 +28,17 @@ public class DrivetrainDrive extends CommandBase {
     // Mapped to symetric max values from shuffleboard
     this.speedSetpoint = IStream.create(() -> driver2.getRightTrigger() - driver2.getLeftTrigger())
         .filtered(
-            x -> SLMath.map(x, -1, 1, -Settings.Drivetrain.MAX_SPEED.get(), Settings.Drivetrain.MAX_SPEED.get()),
-            x -> SLMath.deadband(x, Settings.Drivetrain.SPEED_DEADBAND.get()),
-            x -> SLMath.spow(x, Settings.Drivetrain.SPEED_POWER.get()),
+            x -> SLMath.map(x, -1, 1, -Settings.Drivetrain.MAX_SPEED, Settings.Drivetrain.MAX_SPEED),
+            x -> SLMath.deadband(x, Settings.Drivetrain.SPEED_DEADBAND),
+            x -> SLMath.spow(x, Settings.Drivetrain.SPEED_POWER),
             new LowPassFilter(Settings.Drivetrain.SPEED_FILTER));
 
     this.angleSetpoint = IStream.create(() -> -driver2.getLeftX())
         .filtered(
-            x -> SLMath.map(x, -1, 1, -Settings.Drivetrain.MAX_SPEED_ANGLE.get(),
-                Settings.Drivetrain.MAX_SPEED_ANGLE.get()),
-            x -> SLMath.deadband(x, Settings.Drivetrain.ANGLE_DEADBAND.get()),
-            x -> SLMath.spow(x, Settings.Drivetrain.ANGLE_POWER.get()),
+            x -> SLMath.map(x, -1, 1, -Settings.Drivetrain.MAX_SPEED_ANGLE,
+                Settings.Drivetrain.MAX_SPEED_ANGLE),
+            x -> SLMath.deadband(x, Settings.Drivetrain.ANGLE_DEADBAND),
+            x -> SLMath.spow(x, Settings.Drivetrain.ANGLE_POWER),
             new LowPassFilter(Settings.Drivetrain.ANGLE_FILTER));
 
     addRequirements(drivetrain);

@@ -2,8 +2,8 @@ package frc.robot.constants;
 
 
 // import com.stuypulse.stuylib.network.SmartBoolean;
-import com.stuypulse.stuylib.network.SmartNumber;
-import com.stuypulse.stuylib.network.SmartString;
+// import com.stuypulse.stuylib.network.SmartNumber;
+// import com.stuypulse.stuylib.network.SmartString;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -19,25 +19,24 @@ public interface Settings {
 
     public interface Drivetrain {
         // If speed is below this, use quick turn
-        SmartNumber BASE_TURNING_SPEED = new SmartNumber("Driver Settings/Base Turn Speed", 0.45);
-        SmartNumber INVERT_ANGLE_THREASHOLD = new SmartNumber(
-        "Driver Settings/ Invert Steering, Angle Setpoint Threshold", 0.15);
+        double BASE_TURNING_SPEED = .25;
+        double INVERT_ANGLE_THREASHOLD = 0.15;
 
         // Low Pass Filter and deadband for Driver Controls
-        SmartNumber SPEED_DEADBAND = new SmartNumber("Driver Settings/Speed Deadband", 0.00);
-        SmartNumber ANGLE_DEADBAND = new SmartNumber("Driver Settings/Turn Deadband", 0.10);
+        double SPEED_DEADBAND = 0.00;
+        double ANGLE_DEADBAND = 0.10;
         
-        SmartNumber MAX_SPEED_ANGLE = new SmartNumber("Driver Settings/Max Speed Angle", 0.85);
-        SmartNumber MAX_SPEED = new SmartNumber("Driver Settings/Max Speed", 1.0);
+        double MAX_SPEED_ANGLE = 0.85;
+        double MAX_SPEED = 0.7;
 
-        SmartNumber SPEED_POWER = new SmartNumber("Driver Settings/Speed Power", 2.0);
-        SmartNumber ANGLE_POWER = new SmartNumber("Driver Settings/Turn Power", 1.0);
+        double SPEED_POWER = 2.0;
+        double ANGLE_POWER = 1.0;
 
-        SmartNumber SPEED_FILTER = new SmartNumber("Driver Settings/Speed Filtering", 0.25);
-        SmartNumber ANGLE_FILTER = new SmartNumber("Driver Settings/Turn Filtering", 0.005);
+        double SPEED_FILTER = 0.25;
+        double ANGLE_FILTER = 0.005;
 
-        SmartNumber DISPLACEMENT_METERS = new SmartNumber("Driver Settings/Displacement Auto", 0.0);
-        SmartNumber TIME_MOVING = new SmartNumber("Driver Settings/Time Driving Auto", 0.0);
+        double DISPLACEMENT_METERS = 0.0;
+        double TIME_MOVING = 0.0;
 
         // Width of the robot
         double TRACK_WIDTH = Units.inchesToMeters(26.9); 
@@ -84,46 +83,6 @@ public interface Settings {
                     (WHEEL_CIRCUMFERENCE / ENCODER_PULSES_PER_REVOLUTION)
                             * GearRatio.ENCODER_TO_WHEEL;
         }
-    }
-
-    public interface Feeder{
-        SmartNumber FEEDER_FED = new SmartNumber("Feeder and Shooter Settings/Feeder Position Fed", 1.0);
-
-        SmartNumber FEEDER_NOT_FED = new SmartNumber("Feeder and Shooter Settings/Feeder Position Not Fed", -1.0);
-
-
-        
-
-        public interface PID {
-            int kSlot = 0;
-            double kF = 0;
-            double kP = 0.02;
-            double kI = 0.00001;
-            double kD = 0.001;
-            double kTimeoutMs = 50;
-        }
-    }
-
-    public interface Shooter {
-        // Low Pass Filter and deadband for Feeder Controls
-        SmartNumber SHOOT_SPEED = new SmartNumber("Feeder and Shooter Settings/Shooting Speed", 230000.0);
-        SmartNumber SHOOT_PERCENT = new SmartNumber("Shooter Settings/Back Wheel Percent Output", -1);
-
-        public interface PID {
-            int kSlot = 0;
-            double kF = 0;
-            double kP = 0.005;
-            double kI = 0;
-            double kD = 0;
-            double kTimeoutMs = 50;
-        }
-    }
-    public interface Climber {
-        SmartNumber WINCH_POWER = new SmartNumber("Climber Settings/Climber Speed", 0.75);
-
-        SmartNumber RATCHET_ENGAGE_ANGLE = new SmartNumber("Climber Settings/Ratchet Engage Angle", 40);
-
-        SmartNumber RATCHET_RELEASE_ANGLE = new SmartNumber("Climber Settings/Ratchet Release Angle", 0);
     }
 
 }
