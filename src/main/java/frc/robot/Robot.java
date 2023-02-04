@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic(){
-      m_robotContainer.driveTrain.updateOdometry();
+      m_robotContainer.driveTrain.updateOdometry();  
       m_robotContainer.traj.periodic();
     //TODO: PUT AUTO COMMAND HERE
 

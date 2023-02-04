@@ -29,12 +29,14 @@ public class BuildTraj extends CommandBase {
   private RamseteCommand ramseteCommand;
   private Traj traj;
   private Trajectory photonTrak;
+  private Vision vision;
   /** Creates a new buildTraj. */
-  public BuildTraj(DriveSubsystem driveTrain, Traj traj) {
+  public BuildTraj(DriveSubsystem driveTrain, Traj traj, Vision vision) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain, traj);
     this.driveTrain = driveTrain;
     this.traj = traj;
+    this.vision = vision;
   }
 
   // Called when the command is initially scheduled.
