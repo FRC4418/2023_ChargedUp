@@ -25,55 +25,50 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 public class BuildTraj extends CommandBase {
-  private DriveSubsystem driveTrain;
-  private RamseteCommand ramseteCommand;
-  private Traj traj;
+  private static DriveSubsystem driveTrain;
+  private static Vision vision;
   private Trajectory photonTrak;
-  private Vision vision;
+  private RamseteCommand  ramseteCommand;
   /** Creates a new buildTraj. */
-  public BuildTraj(DriveSubsystem driveTrain, Traj traj, Vision vision) {
+  public BuildTraj(DriveSubsystem driveTrain, Vision vision) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveTrain, traj);
+    addRequirements(driveTrain, vision);
     this.driveTrain = driveTrain;
-    this.traj = traj;
     this.vision = vision;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-//TODO: USE SAME .getPose in trajectory generator
-    // photonTrak = TrajectoryGenerator.generateTrajectory(
-    //     new Pose2d(
-    //       0.0,
-    //       0.0, 
-    //       new Rotation2d()
-    //     ), 
-    //     List.of(),
-    //     vision.getCameraToTarget(), 
-    //     driveTrain.getTrajConfig()
-    //   );
+    photonTrak = TrajectoryGenerator.generateTrajectory(
+        vision.getCameraToTarget(),
+        List.of(), 
+        new Pose2d(1.0,0.0, new Rotation2d()),
+        driveTrain.getTrajConfig()
+      );
+    
+
+      SmartDashboard.putNumber("Length of Traj (Seconds)", photonTrak.getTotalTimeSeconds());
 
       ramseteCommand = new RamseteCommand(
-        traj.photonTrak, 
+        photonTrak, 
         driveTrain::getPose, 
         new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta), 
         new SimpleMotorFeedforward(
           DriveConstants.ksVolts,
           DriveConstants.kvVoltSecondsPerMeter,
-          DriveConstants.kaVoltSecondsSquaredPerMeter
-        ), 
-        driveTrain.kinematics, 
-        driveTrain::getWheelSpeeds, 
-        new PIDController(DriveConstants.kPDriveVel, 0, 0),
-        new PIDController(DriveConstants.kPDriveVel, 0, 0), 
-        driveTrain::tankDriveVolts, 
-        driveTrain
-      );
+          DriveConstants.kaVoltSecondsSquaredPerMeter), 
+          driveTrain.kinematics, 
+          driveTrain::getWheelSpeeds, 
+          new PIDController(DriveConstants.kPDriveVel, 0, 0),
+          new PIDController(DriveConstants.kPDriveVel, 0, 0), 
+          driveTrain::tankDriveVolts, 
+          driveTrain);
   
-    driveTrain.resetOdometry(photonTrak.getInitialPose());
+          driveTrain.resetOdometry(photonTrak.getInitialPose());
   
-    ramseteCommand.schedule();
+        ramseteCommand.schedule();
+
 
   }
 

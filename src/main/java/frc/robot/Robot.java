@@ -52,6 +52,9 @@ public class Robot extends TimedRobot {
   public static Transform3d camToTargetTranslation;
   
   public static DifferentialDrivePoseEstimator estimator;
+
+  private final SlewRateLimiter m_speedLimiter = new SlewRateLimiter(0.5);
+  private final SlewRateLimiter m_roLimiter = new SlewRateLimiter(0.5);
   
   @Override
   public void robotInit() {
@@ -76,28 +79,22 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-      //TODO: MAYBE MOVE TO AUTO. PERIODIC
       m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-      //m_autonomousCommand.schedule();
+      m_autonomousCommand.schedule();
     }
 
     @Override
     public void autonomousPeriodic(){
-      m_robotContainer.driveTrain.updateOdometry();  
-      m_robotContainer.traj.periodic();
-    //TODO: PUT AUTO COMMAND HERE
-
-    // SmartDashboard.putNumber("traj hashcode", m_autonomousCommand.hashCode());
-    
+      m_robotContainer.driveTrain.updateOdometry();
       
-      // SmartDashboard.putString("Translation to target", m_robotContainer.vision.getCameraToTarget().toString());
-      // SmartDashboard.putString("Current Pose", DriveSubsystem.estimator.getEstimatedPosition().toString());
-      // SmartDashboard.putString("PoseMeters", m_robotContainer.driveTrain.getPose().toString());
+      SmartDashboard.putString("Translation to target", m_robotContainer.vision.getCameraToTarget().toString());
+      SmartDashboard.putString("Current Pose", DriveSubsystem.estimator.getEstimatedPosition().toString());
+      SmartDashboard.putString("PoseMeters", m_robotContainer.driveTrain.getPose().toString());
 
-      // // Trajectory testTraj = TrajectoryGenerator.generateTrajectory(m_robotContainer.driveTrain.estimator.getEstimatedPosition(), List.of(), m_robotContainer.vision.getCameraToTarget(), m_robotContainer.driveTrain.getTrajConfig());
+      // Trajectory testTraj = TrajectoryGenerator.generateTrajectory(m_robotContainer.driveTrain.estimator.getEstimatedPosition(), List.of(), m_robotContainer.vision.getCameraToTarget(), m_robotContainer.driveTrain.getTrajConfig());
     
-      // // SmartDashboard.putString("Trajectory toString", testTraj.toString());
-      // // SmartDashboard.putNumber("Trajectory duration", testTraj.getTotalTimeSeconds());
+      // SmartDashboard.putString("Trajectory toString", testTraj.toString());
+      // SmartDashboard.putNumber("Trajectory duration", testTraj.getTotalTimeSeconds());
     }
 
 

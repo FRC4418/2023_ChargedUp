@@ -3,7 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
@@ -27,54 +26,73 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Vision extends SubsystemBase {
-  // create camera object
-  public static PhotonCamera camera = new PhotonCamera("USB_Camera");
-  // create AprilTagFieldLayout object to map tags to locations
+  //create camera object
+  //public static PhotonCamera camera = new PhotonCamera("USB_Camera");
+  public static PhotonCamera camera = new PhotonCamera("Microsoft_LifeCam_HD-3000");
+  //create AprilTagFieldLayout object to map tags to locations
   private static AprilTagFieldLayout aprilTagFieldLayout;
-  // map camera to the drive train
+  //map camera to the drive train
   public static Transform3d cameraToDrivetrain;
-  // create new PhotonVision Pose Estimator
+  //create new PhotonVision Pose Estimator
   public static PhotonPoseEstimator m_poseEstimator;
-  // lasat frame
+  //lasat frame
   public static PhotonTrackedTarget lastTarget;
 
   public double timeStamp;
   public double previousTimeStamp;
   public double previousPipelineTimestamp;
   public PhotonPipelineResult previousResult;
-
+  public PhotonPipelineResult result;
   /** Creates a new vision. */
   public Vision() {
-    // populate transform3d camera realtive to robot
+    result = camera.getLatestResult();
+    previousResult = result;
+    //Transform3d tagTogoal = new Transform3d(new Translation3d(1.5,0.0,0.0), new Rotation3d(0.0,0.0,Math.PI));
+    previousPipelineTimestamp = 0.0;
+    
+    //populate transform3d camera realtive to robot
     cameraToDrivetrain = new Transform3d(
-        new Translation3d(0.56, 0.25, 0),
-        new Rotation3d(0, 0, 0));
+      new Translation3d(0.35,0.36,0.14), 
+      new Rotation3d(0,0,0)
+      );
   }
 
-  public Pose2d getCameraToTarget() {
-    var result = camera.getLatestResult();
-    // double timeStamp = result.getTimestampSeconds();
-    // if(timeStamp != previousPipelineTimestamp && result.hasTargets()){
-    // previousPipelineTimestamp = timeStamp;
-    // previousResult = result;
-    // }
+  public Pose2d getCameraToTarget(){
+    result = camera.getLatestResult();
+
+    
     if (result == null) {
-      return null;
+
+      result = previousResult;
+
+    }
+    else {
+
+      previousResult = result;
+
     }
 
-    PhotonTrackedTarget target = result.getBestTarget();
-    if (target == null) {
+    // double timeStamp = result.getTimestampSeconds();    
+    // if(timeStamp != previousPipelineTimestamp && result.hasTargets()){
+    //   previousPipelineTimestamp = timeStamp;
+    //   previousResult = result;
+    // }
+    //if(result == null){
+      //return null;
+    //}
+    
+    PhotonTrackedTarget target = result.getBestTarget(); 
+    if(target == null){
       return null;
     }
-    // create transfromToTarget using values from camera
-    Transform3d transformToTarget = target.getBestCameraToTarget();
-    if (transformToTarget == null) {
+    //create transfromToTarget using values from camera
+    Transform3d transformToTarget = target.getBestCameraToTarget();   
+    if(transformToTarget == null){
       return null;
     }
-    // translate 3D pose to 2D pose and returns
+    //translate 3D pose to 2D pose and returns
     Pose2d resultPose;
-    resultPose = new Pose2d(transformToTarget.getX() - 0.5, transformToTarget.getY(),
-        transformToTarget.getRotation().toRotation2d());
+    resultPose = new Pose2d(transformToTarget.getX()-0.25, transformToTarget.getY(), transformToTarget.getRotation().toRotation2d());
     return resultPose;
   }
 

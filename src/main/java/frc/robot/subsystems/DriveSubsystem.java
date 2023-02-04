@@ -4,9 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.time.chrono.ThaiBuddhistChronology;
-import java.util.function.DoubleSupplier;
-
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
@@ -33,6 +30,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
+  private Pose2d previousPose;
+  private Pose2d currentPose;
   // Create Pose Estimator
   // create new DifferentialDrivePoseEstimator
   public static DifferentialDrivePoseEstimator estimator;
@@ -40,12 +39,12 @@ public class DriveSubsystem extends SubsystemBase {
   private TrajectoryConfig trajConfig;
 
   // The motors on the left side of the drive.
-  final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(3);
-  final WPI_TalonFX leftBackMotor = new WPI_TalonFX(2);
+  final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(2);
+  final WPI_TalonFX leftBackMotor = new WPI_TalonFX(3);
   MotorControllerGroup m_leftMotors = new MotorControllerGroup(leftFrontMotor, leftBackMotor);
 
-  final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(4);
-  final WPI_TalonFX rightBackMotor = new WPI_TalonFX(5);
+  final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(5);
+  final WPI_TalonFX rightBackMotor = new WPI_TalonFX(6);
   MotorControllerGroup m_rightMotors = new MotorControllerGroup(rightFrontMotor, rightBackMotor);
 
   // kinematics
@@ -71,7 +70,6 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
 
-
   // vision
   private static Vision vision;
 
@@ -79,14 +77,13 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem(Vision vision) {
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
-    
+    // gearbox is constructed, you might have to invert the left side instead  
   
     
     //  m_rightMotors.setInverted(true);
 
     this.vision = vision;
-//TODO: LOOK AT INITAL POSE PASSED TO ESTIMATOR
+
     estimator = new DifferentialDrivePoseEstimator(
         kinematics,
         ahrs.getRotation2d(),
@@ -134,8 +131,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
 
     resetEncoders();
-    
     m_odometry = new DifferentialDriveOdometry(ahrs.getRotation2d(), getHeading(), getAverageEncoderDistance());
+  
+    currentPose = estimator.getEstimatedPosition();
+    previousPose = currentPose;
   }
 
   @Override
@@ -154,7 +153,16 @@ public class DriveSubsystem extends SubsystemBase {
     //return estimator.getEstimatedPosition();
     //return new Pose2d();
     //return null;
-    return m_odometry.getPoseMeters();
+    //return m_odometry.getPoseMeters();
+  
+    currentPose = estimator.getEstimatedPosition();
+    
+    if (currentPose.getRotation() == null || currentPose.getTranslation() == null){
+      return previousPose;
+    } else{
+      previousPose = currentPose;
+      return currentPose;
+    }
   }
 
   public DifferentialDriveVoltageConstraint getAutoVoltageConstraint() {
@@ -182,6 +190,16 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
     m_odometry.resetPosition(ahrs.getRotation2d(), getHeading(), getAverageEncoderDistance(), pose);
+  }
+
+  /**
+   * Drives the robot using arcade controls.
+   *
+   * @param fwd the commanded forward movement
+   * @param rot the commanded rotation
+   */
+  public void arcadeDrive(double fwd, double rot) {
+    m_drive.arcadeDrive(fwd, rot);
   }
 
   /**
@@ -261,5 +279,4 @@ public class DriveSubsystem extends SubsystemBase {
   public double getTurnRate() {
     return ahrs.getRate();
   }
-
 }
