@@ -11,29 +11,24 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-//import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import frc.robot.Robot;
-import frc.robot.Constants.DriveConstants;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-//import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
   // The motors on the left side of the drive.
-  final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(3);
-  final WPI_TalonFX leftBackMotor = new WPI_TalonFX(2);
+  final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(4);
+  final WPI_TalonFX leftBackMotor = new WPI_TalonFX(5);
   MotorControllerGroup m_leftMotors = new MotorControllerGroup(leftFrontMotor, leftBackMotor);
 
-  final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(4);
-  final WPI_TalonFX rightBackMotor = new WPI_TalonFX(5);
+  final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(3);
+  final WPI_TalonFX rightBackMotor = new WPI_TalonFX(2);
   MotorControllerGroup m_rightMotors = new MotorControllerGroup(rightFrontMotor, rightBackMotor);
 
   // The robot's drive
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
-  private final AHRS ahrs = new AHRS();
 
   // The left-side drive encoder
   private final Encoder m_leftEncoder =
@@ -51,19 +46,18 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   //private final Gyro m_gyro = new ADXRS450_Gyro();
-  private final AHRS m_gyro = new AHRS();
-
+  public final AHRS ahrs = new AHRS();
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+    ahrs.calibrate();
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    m_rightMotors.setInverted(true);
-
-    m_gyro.calibrate();
+    m_rightMotors.setInverted(false);
+    m_leftMotors.setInverted(true);
 
     leftFrontMotor.setNeutralMode(NeutralMode.Brake);
     leftBackMotor.setNeutralMode(NeutralMode.Brake);
@@ -75,15 +69,14 @@ public class DriveSubsystem extends SubsystemBase {
     m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
 
     resetEncoders();
-    //m_odometry = new DifferentialDriveOdometry(m_gyro.getRotation2d());
-    m_odometry = new DifferentialDriveOdometry(Robot.ahrs.getRotation2d(), getHeading(), getAverageEncoderDistance());
+    m_odometry = new DifferentialDriveOdometry(ahrs.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
   }
 
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
     m_odometry.update(
-        m_gyro.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+        ahrs.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
   }
 
   /**
@@ -111,8 +104,7 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
-    //m_odometry.resetPosition(pose, m_gyro.getRotation2d());
-    m_odometry.resetPosition(null, getHeading(), getAverageEncoderDistance(), pose);
+    m_odometry.resetPosition(ahrs.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance(), pose);
   }
 
   /**
@@ -141,16 +133,6 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetEncoders() {
     m_leftEncoder.reset();
     m_rightEncoder.reset();
-  }
-
-  public void setVelocity(Number Velocity){
-    m_leftMotors.set((double)Velocity);
-    m_rightMotors.set((double)Velocity);
-  }
-
-  public void stop(){
-    m_leftMotors.set((double)0);
-    m_rightMotors.set((double)0);
   }
 
   /**
@@ -191,7 +173,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
-    m_gyro.reset();
+    ahrs.reset();
   }
 
   /**
@@ -200,7 +182,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return the robot's heading in degrees, from -180 to 180
    */
   public double getHeading() {
-    return m_gyro.getRotation2d().getDegrees();
+    return ahrs.getRotation2d().getDegrees();
   }
 
   /**
@@ -209,6 +191,6 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The turn rate of the robot, in degrees per second
    */
   public double getTurnRate() {
-    return m_gyro.getRate();
+    return -ahrs.getRate();
   }
 }

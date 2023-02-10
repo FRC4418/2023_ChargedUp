@@ -4,23 +4,10 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import java.lang.annotation.Target;
-
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
-import org.photonvision.common.hardware.VisionLEDMode;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
-import com.kauailabs.navx.frc.AHRS;
-import frc.robot.commands.tippedBackwards;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -30,14 +17,8 @@ import frc.robot.commands.tippedBackwards;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  
-  private int stallCounter = 0;
-  public static AHRS ahrs = new AHRS();
 
   private RobotContainer m_robotContainer;
-
-  //Vision Stuff
-  public static PhotonCamera camera = new PhotonCamera("USB_Camera");  
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -48,8 +29,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    ahrs.calibrate();
-    System.out.println("NAVX STARTEDNAVX STARTEDNAVX STARTEDNAVX STARTEDNAVX STARTEDNAVX STARTED");
   }
 
   /**
@@ -78,12 +57,14 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand.schedule();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    m_robotContainer.m_robotDrive.periodic();
   }
 
   @Override
@@ -94,45 +75,12 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
-
-      //ahrs.calibrate();
-      
     }
-    
-
-    
-
-
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    var result = camera.getLatestResult();
-    boolean hasTargets = result.hasTargets();
-    final PhotonTrackedTarget target = result.getBestTarget();
-    double range;
-
-    camera.setLED(VisionLEDMode.kBlink);
-
-    if(hasTargets == true){
-      System.out.println("There are targets in the image");
-      System.out.println("The ID of the apriltag is: " + target.getFiducialId());
-      System.out.println("The Area of the target is: " + target.getArea());
-      System.out.println("The Pitch to the target is: " + target.getPitch());
-
-      range = PhotonUtils.calculateDistanceToTargetMeters(0.65, 1.0, Units.degreesToRadians (-7.3), Units.degreesToRadians(target.getPitch()));
-      
-
-      SmartDashboard.putNumber("AprilTag Pitch", target.getPitch());
-      SmartDashboard.putNumber("AprilTag ID", target.getFiducialId());
-      SmartDashboard.putNumber("Distance to the Target", range);
-    } else {
-      System.out.println("There are NOT targets in the image");
-    }
-
-    
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {
