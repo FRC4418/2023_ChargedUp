@@ -4,6 +4,13 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,7 +35,16 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+    String trajecotryJson = "deploy/pathplanner/generatedJSON/Path2.wpilib.json";
+    Trajectory trajectory = new Trajectory();
+    try{
+      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajecotryJson);
+      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    } catch(IOException ex){
+      DriverStation.reportError("Unable to open trajectory" + trajecotryJson, ex.getStackTrace());
+    }
+
+    m_robotContainer = new RobotContainer(trajectory);
   }
 
   /**
@@ -57,6 +73,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    m_robotContainer.m_robotDrive.periodic();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     m_autonomousCommand.schedule();
   }
