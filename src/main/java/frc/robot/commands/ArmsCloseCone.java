@@ -4,39 +4,46 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Arms;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class IntakePush extends CommandBase {
+public class ArmsCloseCone extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Intake m_subsystem;
+  private final Arms m_subsystem;
+  double position;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public IntakePush(Intake subsystem) {
+  public ArmsCloseCone(Arms subsystem, double pos) {
     m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
+    this.position = pos;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {}
 
-  // Called every time the scheduler runs while the command is scheduled.
+  // Called every time the scheduler runs while the command is scheduled. (this requires tuning, this numebr represents the position, not speed)
   @Override
   public void execute() {
-    m_subsystem.intake(.2);
+    System.out.println(m_subsystem.getPos());
+    if(m_subsystem.getPos()<-position){
+      m_subsystem.grab(.15);
+    }else{
+      m_subsystem.grab(0);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_subsystem.intake(0);
+    m_subsystem.grab(0);
   }
 
   // Returns true when the command should end.

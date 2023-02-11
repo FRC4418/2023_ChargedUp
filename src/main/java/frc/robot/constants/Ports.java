@@ -15,15 +15,6 @@ public interface Ports {
     public interface Arms{
         int ARMS = 4;
     }
-
-    public interface Drivetrain {
-        // Motors
-        int LEFT_FRONT = 2;
-        int LEFT_BACK = 3;
-
-        int RIGHT_FRONT = 5;
-        int RIGHT_BACK = 6;
-    }
     
     
 }

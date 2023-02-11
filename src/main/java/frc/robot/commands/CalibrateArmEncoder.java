@@ -4,20 +4,23 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Arms;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 /** An example command that uses an example subsystem. */
-public class IntakePush extends CommandBase {
+public class CalibrateArmEncoder extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Intake m_subsystem;
+  private final Arms m_subsystem;
+
+  DigitalInput armLimitSwitch = new DigitalInput(2);
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public IntakePush(Intake subsystem) {
+  public CalibrateArmEncoder(Arms subsystem) {
     m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
@@ -27,16 +30,22 @@ public class IntakePush extends CommandBase {
   @Override
   public void initialize() {}
 
-  // Called every time the scheduler runs while the command is scheduled.
+  // Called every time the scheduler runs while the command is scheduled. (this requires tuning, this numebr represents the position, not speed)
   @Override
   public void execute() {
-    m_subsystem.intake(.2);
+    System.out.println(armLimitSwitch.get());
+    if(!armLimitSwitch.get()){
+      m_subsystem.grab(.1);
+    }else{
+      m_subsystem.grab(0);
+      m_subsystem.resetEncoders();
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_subsystem.intake(0);
+    m_subsystem.grab(0);
   }
 
   // Returns true when the command should end.

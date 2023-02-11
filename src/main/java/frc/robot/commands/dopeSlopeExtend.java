@@ -4,20 +4,26 @@
 
 package frc.robot.commands;
 
+import com.stuypulse.stuylib.input.Gamepad;
+
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DopeSlope;
-import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
 
-public class dopeSlopeControl extends CommandBase {
+public class dopeSlopeExtend extends CommandBase {
   /** Creates a new dopeSlopeControl. */
-  private final DopeSlope dopeslope;
-  private final AutoGamepad autogamepad;
+  private final DopeSlope m_subsystem;
+  double position;
+  Gamepad l;
 
-  public dopeSlopeControl(DopeSlope dopeslope, AutoGamepad autogamepad) {
+  public dopeSlopeExtend(DopeSlope subsystem, double pos, Gamepad e) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.dopeslope=dopeslope;
-    addRequirements(dopeslope);
-    this.autogamepad=autogamepad;
+    m_subsystem = subsystem;
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(subsystem);
+    this.position = pos;
+
+    this.l = e;
   }
 
   // Called when the command is initially scheduled.
@@ -27,12 +33,20 @@ public class dopeSlopeControl extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    dopeslope.FunnyMethod(autogamepad.getRightY());
+    // System.out.println(m_subsystem.getEncoderLength());
+    // if(m_subsystem.getEncoderLength()<-position){
+    //   m_subsystem.move(.15);
+    // }else{
+    //   m_subsystem.move(0);
+    // }
+    m_subsystem.move(.1);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_subsystem.move(0);
+  }
 
   // Returns true when the command should end.
   @Override
