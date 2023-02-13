@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.List;
 
+import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -20,8 +22,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.commands.DrivetrainDrive;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Vision;
+import frc.robot.commands.DrivetrainDrive;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -32,11 +36,17 @@ import frc.robot.subsystems.Vision;
 public class RobotContainer {
   public Vision vision = new Vision();
   //public DriveSubsystem m_robotDrive = new DriveSubsystem(vision);
-  public DriveSubsystem m_robotDrive = new DriveSubsystem();
+  public DriveSubsystem m_robotDrive = new DriveSubsystem(vision);
+
+  public final AutoGamepad driver = new AutoGamepad(0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    configureDefualtCommands();
+  }
 
+  public void configureDefualtCommands(){
+    m_robotDrive.setDefaultCommand(new DrivetrainDrive(m_robotDrive, driver));
   }
 
   /**
@@ -74,13 +84,13 @@ public class RobotContainer {
     //         List.of(),
     //         // End 3 meters straight ahead of where we started, facing forward
     //         //A 1 MEANS 10 METERS, DO MATH
-    //         new Pose2d(1.0, 0, new Rotation2d(0)),
+    //         new Pose2d(0.5, 0, new Rotation2d(0)),
     //         // Pass config
     //         config); 
     Trajectory photonTrak = TrajectoryGenerator.generateTrajectory(
         vision.getCameraToTarget(),
         List.of(), 
-        new Pose2d(1.0,0.0, new Rotation2d(Units.degreesToRadians(180))),
+        new Pose2d(0.8,0.0, new Rotation2d(Units.degreesToRadians(180))),
         config
       );
 
@@ -94,7 +104,7 @@ public class RobotContainer {
             with looisng the target, if we drove the trajectory using odometry instead of pose
             estimation, we wouldn't need to deal with that whole null handeling and realignment.
             **/
-            m_robotDrive::getPose,
+            m_robotDrive::getEstimatorPose,
             new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
             new SimpleMotorFeedforward(
                 DriveConstants.ksVolts,
@@ -102,8 +112,8 @@ public class RobotContainer {
                 DriveConstants.kaVoltSecondsSquaredPerMeter),
             DriveConstants.kDriveKinematics,
             m_robotDrive::getWheelSpeeds,
-            new PIDController(DriveConstants.kPDriveVel, 0, 0),
-            new PIDController(DriveConstants.kPDriveVel, 0, 0),
+            new PIDController(6.0, 1.5, 2.0),
+            new PIDController(6.0, 1.5, 2.0),
             // RamseteCommand passes volts to the callback
             m_robotDrive::tankDriveVolts,
             m_robotDrive);

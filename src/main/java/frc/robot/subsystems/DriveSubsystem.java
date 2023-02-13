@@ -4,16 +4,24 @@
 
 package frc.robot.subsystems;
 
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
+import com.stuypulse.stuylib.math.SLMath;
 
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
@@ -50,9 +58,21 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
 
+  private final Vision vision;
+
+  public DifferentialDrivePoseEstimator estimator;
+
+  public final DifferentialDriveKinematics kinematics;
+
+  private Pose2d previousPose;
+  private Pose2d currentPose;
+
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
+  public DriveSubsystem(Vision vision) {
+    kinematics = new DifferentialDriveKinematics(0.63);
+    
     ahrs.calibrate();
+    this.vision = vision;
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
@@ -70,13 +90,82 @@ public class DriveSubsystem extends SubsystemBase {
 
     resetEncoders();
     m_odometry = new DifferentialDriveOdometry(ahrs.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+  
+    estimator = new DifferentialDrivePoseEstimator(
+      kinematics,
+      ahrs.getRotation2d(),
+      getLeftEncoder().getDistance(),
+      getRightEncoder().getDistance(),
+      new Pose2d());
+
+    currentPose = estimator.getEstimatedPosition();
+    previousPose = currentPose;
   }
 
   @Override
   public void periodic() {
+    //get vision results
+    PhotonPipelineResult result = vision.camera.getLatestResult();
+    //PhotonTrackedTarget target = result.getBestTarget();
     // Update the odometry in the periodic block
     m_odometry.update(
         ahrs.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+    //update Pose estimator
+    estimator.update(ahrs.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+    if(result.hasTargets()){
+      estimator.addVisionMeasurement(vision.getCameraToTarget(), Timer.getFPGATimestamp() - 0.3);
+    }
+    SmartDashboard.putString("estimator pose", estimator.getEstimatedPosition().toString());
+  }
+
+  public void tankDrive(double left, double right) {
+    
+      m_drive.tankDrive(left, right, false);
+    }
+
+  public void curvatureDrive(double xSpeed, double zRotation, double baseTS) {
+      // Clamp all inputs to valid values
+      xSpeed = SLMath.clamp(xSpeed, -1.0, 1.0);
+      zRotation = SLMath.clamp(zRotation, -1.0, 1.0);
+      baseTS = SLMath.clamp(baseTS, 0.0, 1.0);
+
+      // Find the amount to slow down turning by.
+      // This is proportional to the speed but has a base value
+      // that it starts from (allows turning in place)
+      double turnAdj = Math.max(baseTS, Math.abs(xSpeed));
+
+      // Find the speeds of the left and right wheels
+      double lSpeed = xSpeed + zRotation * turnAdj;
+      double rSpeed = xSpeed - zRotation * turnAdj;
+
+      // Find the maximum output of the wheels, so that if a wheel tries to go > 1.0
+      // it will be scaled down proportionally with the other wheels.
+      double scale = Math.max(1.0, Math.max(Math.abs(lSpeed), Math.abs(rSpeed)));
+
+      lSpeed /= scale;
+      rSpeed /= scale;
+
+      // Feed the inputs to the drivetrain
+      tankDrive(lSpeed, rSpeed);
+  }
+
+  public void curvatureDrive(double xSpeed, double zRotation) {
+    this.curvatureDrive(xSpeed, zRotation, 0.45);
+}
+
+  public void impulseDrive(double xSpeed, double zRotation) {
+      // If the speed is negative and the steering setpoint is small, then invert the
+      // steering controls
+      if (xSpeed < -0.05 && Math.abs(zRotation) < 0.15) {
+        curvatureDrive(xSpeed, zRotation); // Inverted steering
+      } else {
+        curvatureDrive(xSpeed, -zRotation); // Standard steering
+      }
+    }
+
+  public Pose2d getEstimatorPose(){
+    periodic();
+    return estimator.getEstimatedPosition();
   }
 
   /**
