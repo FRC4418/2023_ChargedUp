@@ -13,6 +13,7 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPRamseteCommand;
+import com.pathplanner.lib.server.PathPlannerServer;
 import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -38,18 +39,19 @@ public class RobotContainer {
   public final AutoGamepad driver = new AutoGamepad(0);
 
 
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureDefualtCommands();
     configureCommnads();
-
+    PathPlannerServer.startServer(5811);
   }
   public void configureDefualtCommands(){
     driveTrain.setDefaultCommand(new DrivetrainDrive(driveTrain, driver));
   }
   public void configureCommnads(){
-    driver.getDPadUp().onTrue(new resetOdometry(driveTrain));
+    driver.getDPadUp().whileTrue(new resetOdometry(driveTrain));
   }
 
   /**
@@ -59,30 +61,29 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand(boolean isFirstPath) {
     // An example command will be run in autonomous
-    PathPlannerTrajectory examplePath = PathPlanner.loadPath("New Path", new PathConstraints(0.6, 0.2));
-    
-    PathPlannerTrajectory traj1 = PathPlanner.generatePath(
-      new PathConstraints(0.4, 0.2), 
-      new PathPoint(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)), // position, heading
-      new PathPoint(new Translation2d(2.0, -2.0), Rotation2d.fromDegrees(0)) // position, heading
-  );
 
+    PathPlannerTrajectory examplePath = PathPlanner.loadPath("NewPath", new PathConstraints(0.4, 0.2));
+    //   PathPlannerTrajectory traj1 = PathPlanner.generatePath(
+  //     new PathConstraints(0.4, 0.2), 
+  //     new PathPoint(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)), // position, heading
+  //     new PathPoint(new Translation2d(2.0, -2.0), Rotation2d.fromDegrees(0)) // position, heading
+  // );\
     return new SequentialCommandGroup(
       new InstantCommand(() -> {
         // Reset odometry for the first path you run during auto
         if(isFirstPath){
-            driveTrain.resetOdometry(traj1.getInitialPose());
+            driveTrain.resetOdometry(examplePath.getInitialPose());
         }
       }),
       new PPRamseteCommand(
-          traj1, 
+          examplePath, 
           driveTrain::getPose, // Pose supplier
           new RamseteController(),
-          new SimpleMotorFeedforward(0.3471, 0.98, 0.31067),
+          new SimpleMotorFeedforward(0.66871, 1.98, 0.61067),
           driveTrain.kinematics, // DifferentialDriveKinematics
           driveTrain::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
-          new PIDController(2.0, 0.1, 0.5), // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-          new PIDController(2.0, 0.1, 0.5), // Right controller (usually the same values as left controller)
+          new PIDController(0.5, 0.1, 0.2), // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+          new PIDController(0.5, 0.1, 0.2), // Right controller (usually the same values as left controller)
           driveTrain::tankDriveVolts, // Voltage biconsumer
           true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
           driveTrain // Requires this drive subsystem

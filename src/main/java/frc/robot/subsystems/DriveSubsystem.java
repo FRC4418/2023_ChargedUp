@@ -173,9 +173,9 @@ public void impulseDrive(double xSpeed, double zRotation) {
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    m_odometry.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), new Pose2d());
-    estimator.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose);
+    //m_odometry.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), new Pose2d());
     resetEncoders();
+    estimator.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose);
   }
 
   /**
