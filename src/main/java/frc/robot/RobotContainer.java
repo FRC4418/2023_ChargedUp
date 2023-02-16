@@ -62,12 +62,9 @@ public class RobotContainer {
   public Command getAutonomousCommand(boolean isFirstPath) {
     // An example command will be run in autonomous
 
-    PathPlannerTrajectory examplePath = PathPlanner.loadPath("NewPath", new PathConstraints(0.4, 0.2));
-    //   PathPlannerTrajectory traj1 = PathPlanner.generatePath(
-  //     new PathConstraints(0.4, 0.2), 
-  //     new PathPoint(new Translation2d(0.0, 0.0), Rotation2d.fromDegrees(0)), // position, heading
-  //     new PathPoint(new Translation2d(2.0, -2.0), Rotation2d.fromDegrees(0)) // position, heading
-  // );\
+    PathPlannerTrajectory examplePath = PathPlanner.loadPath("lineCurvePath", new PathConstraints(0.4, 0.2));
+    PathPlannerServer.sendActivePath(examplePath.getStates());
+
     return new SequentialCommandGroup(
       new InstantCommand(() -> {
         // Reset odometry for the first path you run during auto

@@ -22,10 +22,12 @@ import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
+  
   public DifferentialDrivePoseEstimator estimator;
   // The motors on the left side of the drive.
   final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(3);
@@ -51,9 +53,9 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
 
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-        
     ahrs.calibrate();
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
@@ -84,10 +86,6 @@ public class DriveSubsystem extends SubsystemBase {
     //System.out.println(getLeftEncoderDistance());
     //System.out.println(getRightEncoderDistance());
     estimator.update(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
-    
-    m_odometry.update(
-        ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
-    System.out.println(m_odometry.getPoseMeters().getX() + ", " + m_odometry.getPoseMeters().getY() + "   Rot: " + m_odometry.getPoseMeters().getRotation());
     SmartDashboard.putString("estimator pose", estimator.getEstimatedPosition().toString());
   }
 
@@ -175,7 +173,12 @@ public void impulseDrive(double xSpeed, double zRotation) {
   public void resetOdometry(Pose2d pose) {
     //m_odometry.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), new Pose2d());
     resetEncoders();
-    estimator.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose);
+    // estimator.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose);
+    /**
+    PROTOTYPE, set the wheel position to the x value of the pose and rotation to the rot. value of
+    supplied pose
+    **/
+    estimator.resetPosition(pose.getRotation(), pose.getX(), pose.getX(), pose);
   }
 
   /**
