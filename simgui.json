@@ -1,17 +1,15 @@
 {
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
-    }
-  },
-  "NetworkTables": {
-    "transitory": {
-      "SmartDashboard": {
-        "open": true
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "window": {
+          "visible": true
+        }
       }
     }
-  },
-  "NetworkTables View": {
-    "visible": false
   }
 }

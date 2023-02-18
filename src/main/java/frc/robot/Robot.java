@@ -4,38 +4,17 @@
 
 package frc.robot;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.DriverStation;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.server.PathPlannerServer;
+
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.io.IOException;
-import java.lang.annotation.Target;
-import java.util.List;
-
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.common.hardware.VisionLEDMode;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
-import com.kauailabs.navx.frc.AHRS;
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -43,70 +22,98 @@ import com.kauailabs.navx.frc.AHRS;
  * project.
  */
 public class Robot extends TimedRobot {
-  // private static final PoseStrategy PoseStrategy;
-  
   private Command m_autonomousCommand;
-
+  private final Field2d m_field = new Field2d();
   private RobotContainer m_robotContainer;
 
-  public static Transform3d camToTargetTranslation;
-  
-  public static DifferentialDrivePoseEstimator estimator;
-
-  private final SlewRateLimiter m_speedLimiter = new SlewRateLimiter(0.5);
-  private final SlewRateLimiter m_roLimiter = new SlewRateLimiter(0.5);
-  
+  /**
+   * This function is run when the robot is first started up and should be used for any
+   * initialization code.
+   */
   @Override
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    SmartDashboard.putData("Field", m_field);    
+
+
   }
+
+  /**
+   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
+   * that you want ran during disabled, autonomous, teleoperated and test.
+   *
+   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+   * SmartDashboard integrated updating.
+   */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-schedule
+    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
   }
-    /** This function is called once each time the robot enters Disabled mode. */
-    @Override
-    public void disabledInit() {}
-   
-    @Override
-    public void disabledPeriodic() {}
 
-    @Override
-    public void autonomousInit() {
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+  /** This function is called once each time the robot enters Disabled mode. */
+  @Override
+  public void disabledInit() {}
+
+  @Override
+  public void disabledPeriodic() {}
+
+  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+  @Override
+  public void autonomousInit() {
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand(true);
+
+    PathPlannerTrajectory examplePath = PathPlanner.loadPath("lineCurvePath", new PathConstraints(0.4, 0.2));
+    m_field.getObject("Traj").setTrajectory(examplePath);
+
+    // schedule the autonomous command (example)
+    if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+  }
 
-    @Override
-    public void autonomousPeriodic(){
-      m_robotContainer.driveTrain.updateOdometry();
-      
-      SmartDashboard.putString("Translation to target", m_robotContainer.vision.getCameraToTarget().toString());
-      SmartDashboard.putString("Current Pose", DriveSubsystem.estimator.getEstimatedPosition().toString());
-      SmartDashboard.putString("PoseMeters", m_robotContainer.driveTrain.getPose().toString());
+  /** This function is called periodically during autonomous. */
+  @Override
+  public void autonomousPeriodic() {
+    m_robotContainer.driveTrain.periodic();
+  }
 
-      // Trajectory testTraj = TrajectoryGenerator.generateTrajectory(m_robotContainer.driveTrain.estimator.getEstimatedPosition(), List.of(), m_robotContainer.vision.getCameraToTarget(), m_robotContainer.driveTrain.getTrajConfig());
-    
-      // SmartDashboard.putString("Trajectory toString", testTraj.toString());
-      // SmartDashboard.putNumber("Trajectory duration", testTraj.getTotalTimeSeconds());
+  @Override
+  public void teleopInit() {
+    // This makes sure that the autonomous stops running when
+    // teleop starts running. If you want the autonomous to
+    // continue until interrupted by another command, remove
+    // this line or comment it out.
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
     }
 
+  }
 
-    @Override
-    public void teleopInit(){
+  /** This function is called periodically during operator control. */
+  @Override
+  public void teleopPeriodic() {}
 
-    }
+  @Override
+  public void testInit() {
+    // Cancels all running commands at the start of test mode.
+    CommandScheduler.getInstance().cancelAll();
+  }
 
-    @Override
-    public void teleopPeriodic(){
-      SmartDashboard.putString("Translation to target", m_robotContainer.vision.getCameraToTarget().toString());
-      SmartDashboard.putString("Current Pose", DriveSubsystem.estimator.getEstimatedPosition().toString());
-      SmartDashboard.putString("PoseMeters", m_robotContainer.driveTrain.getPose().toString());
-    }
+  /** This function is called periodically during test mode. */
+  @Override
+  public void testPeriodic() {}
+
+  /** This function is called once when the robot is first started up. */
+  @Override
+  public void simulationInit() {}
+
+  /** This function is called periodically whilst in simulation. */
+  @Override
+  public void simulationPeriodic() {}
 }
