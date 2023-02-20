@@ -27,7 +27,7 @@ public class DrivetrainDrive extends CommandBase {
     // Mapped to symetric max values from shuffleboard
     this.speedSetpoint = IStream.create(() -> driver2.getRightTrigger() - driver2.getLeftTrigger())
         .filtered(
-            x -> SLMath.map(x, -1, 1, -0.5, 0.5),
+            x -> SLMath.map(x, -1, 1, -0.5, 0.6),
             x -> SLMath.deadband(x, 0.0),
             x -> SLMath.spow(x, 2.0),
             new LowPassFilter(0.25));
