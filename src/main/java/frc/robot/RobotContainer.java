@@ -7,7 +7,11 @@ package frc.robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DrivetrainDrive;
+import frc.robot.commands.armDown;
+import frc.robot.commands.armStop;
+import frc.robot.commands.armUp;
 import frc.robot.commands.resetOdometry;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Vision;
 
@@ -52,6 +56,8 @@ public class RobotContainer {
   
   public final DriveSubsystem driveTrain = new DriveSubsystem(vision);
 
+  public final Arm arm = new Arm();
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -62,9 +68,14 @@ public class RobotContainer {
   }
   public void configureDefualtCommands(){
     driveTrain.setDefaultCommand(new DrivetrainDrive(driveTrain, driver));
+    arm.setDefaultCommand(new armStop(arm));
   }
   public void configureCommnads(){
-    driver.getDPadUp().whileTrue(new resetOdometry(driveTrain));
+    driver.getDPadLeft().whileTrue(new resetOdometry(driveTrain));
+    //driver.getTopButton().whileTrue(new armUp(arm));
+    //driver.getBottomButton().whileTrue(new armDown(arm));
+    driver.getDPadUp().whileTrue(new armUp(arm));
+    driver.getDPadDown().whileTrue(new armDown(arm));
   }
 
   public Command visionAlign() {
@@ -164,8 +175,8 @@ public class RobotContainer {
           new SimpleMotorFeedforward(0.66871, 1.98, 0.61067),
           driveTrain.kinematics, // DifferentialDriveKinematics
           driveTrain::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
-          new PIDController(6.4, 0.8, 0.2), // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-          new PIDController(6.4, 0.8, 0.2), // Right controller (usually the same values as left controller)
+          new PIDController(2.6, 3.8, 0.25), // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+          new PIDController(2.6, 3.8, 0.25), // Right controller (usually the same values as left controller)
           driveTrain::tankDriveVolts, // Voltage bicnsumer
           false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
           driveTrain // Requires this drive subsystem
