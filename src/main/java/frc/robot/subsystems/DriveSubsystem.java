@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
@@ -29,13 +30,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class DriveSubsystem extends SubsystemBase {
   
   public DifferentialDrivePoseEstimator estimator;
-  // The motors on the left side of the drive.
-  final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(3);
-  final WPI_TalonFX leftBackMotor = new WPI_TalonFX(2);
+//  The motors on the left side of the drive.
+  final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(39);
+  final WPI_TalonFX leftBackMotor = new WPI_TalonFX(36);
   MotorControllerGroup m_leftMotors = new MotorControllerGroup(leftFrontMotor, leftBackMotor);
 
-  final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(4);
-  final WPI_TalonFX rightBackMotor = new WPI_TalonFX(5);
+  final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(00);
+  final WPI_TalonFX rightBackMotor = new WPI_TalonFX(38);
+  
+  // final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(38);
+  // final WPI_TalonFX leftBackMotor = new WPI_TalonFX(00);
+  // MotorControllerGroup m_leftMotors = new MotorControllerGroup(leftFrontMotor, leftBackMotor);
+
+  // final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(36);
+  // final WPI_TalonFX rightBackMotor = new WPI_TalonFX(39);
   MotorControllerGroup m_rightMotors = new MotorControllerGroup(rightFrontMotor, rightBackMotor);
 
   // The robot's drive
@@ -53,14 +61,16 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
 
-
+  private Vision vision;
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
+  public DriveSubsystem(Vision vision) {
+    this.vision = vision;
     ahrs.calibrate();
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    m_rightMotors.setInverted(true);
+    m_rightMotors.setInverted(false);
+    m_leftMotors.setInverted(true);
 
     leftFrontMotor.setNeutralMode(NeutralMode.Brake);
     leftBackMotor.setNeutralMode(NeutralMode.Brake);
@@ -69,7 +79,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Sets the distance per pulse for the encoders
 
-    kinematics = new DifferentialDriveKinematics(0.63);
+    kinematics = new DifferentialDriveKinematics(0.6096);
 
 
     resetEncoders();
@@ -85,7 +95,11 @@ public class DriveSubsystem extends SubsystemBase {
     //getWheelSpeeds();
     //System.out.println(getLeftEncoderDistance());
     //System.out.println(getRightEncoderDistance());
-    estimator.update(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
+    estimator.update(ahrs.getRotation2d()
+    , getLeftEncoderDistance(), getRightEncoderDistance());
+    if(vision.hasTargets()){
+      estimator.addVisionMeasurement(vision.getCameraToTarget(), Timer.getFPGATimestamp() - 0.3);
+    }
     SmartDashboard.putString("estimator pose", estimator.getEstimatedPosition().toString());
   }
 
@@ -172,13 +186,14 @@ public void impulseDrive(double xSpeed, double zRotation) {
    */
   public void resetOdometry(Pose2d pose) {
     //m_odometry.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), new Pose2d());
+    
+    estimator.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose);
     resetEncoders();
-    // estimator.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose);
     /**
     PROTOTYPE, set the wheel position to the x value of the pose and rotation to the rot. value of
     supplied pose
     **/
-    estimator.resetPosition(pose.getRotation(), pose.getX(), pose.getX(), pose);
+    //estimator.resetPosition(pose.getRotation(), pose.getX(), pose.getX(), pose);
   }
 
   /**
@@ -225,7 +240,7 @@ public void impulseDrive(double xSpeed, double zRotation) {
    * @return the left drive encoder
    */
   public double getLeftEncoderDistance() {
-    return nativeUnitsToDistanceMeters(leftBackMotor.getSelectedSensorPosition());
+    return -nativeUnitsToDistanceMeters(leftBackMotor.getSelectedSensorPosition());
   }
 
   /**
@@ -234,7 +249,7 @@ public void impulseDrive(double xSpeed, double zRotation) {
    * @return the right drive encoder
    */
   public double getRightEncoderDistance() {
-    return -nativeUnitsToDistanceMeters(rightBackMotor.getSelectedSensorPosition());
+    return nativeUnitsToDistanceMeters(rightBackMotor.getSelectedSensorPosition());
   }
 
   /**
@@ -257,7 +272,7 @@ public void impulseDrive(double xSpeed, double zRotation) {
    * @return the robot's heading in degrees, from -180 to 180
    */
   public double getHeading() {
-    return ahrs.getRotation2d().getDegrees();
+    return ahrs.getRotation2d().getDegrees()+360;
   }
 
   /**
@@ -266,7 +281,7 @@ public void impulseDrive(double xSpeed, double zRotation) {
    * @return The turn rate of the robot, in degrees per second
    */
   public double getTurnRate() {
-    return -ahrs.getRate();
+    return ahrs.getRate();
   }
 
 }
