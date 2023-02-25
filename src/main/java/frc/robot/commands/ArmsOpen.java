@@ -30,7 +30,7 @@ public class ArmsOpen extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled. (this requires tuning, this numebr represents the position, not speed)
   @Override
   public void execute() {
-    m_subsystem.grab(69);
+    m_subsystem.grab(-.2);
   }
 
   // Called once the command ends or is interrupted.

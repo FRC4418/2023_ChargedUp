@@ -11,16 +11,15 @@ import com.stuypulse.stuylib.streams.IStream;
 import com.stuypulse.stuylib.streams.filters.LowPassFilter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.constants.Settings;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.*;
 
 public class DrivetrainDrive extends CommandBase {
-  private final Drivetrain drivetrain;
+  private final DriveSubsystem drivetrain;
   private final Gamepad driver;
 
   private final IStream speedSetpoint, angleSetpoint;
 
-  public DrivetrainDrive(Drivetrain drivetrain, AutoGamepad driver2) {
+  public DrivetrainDrive(DriveSubsystem drivetrain, AutoGamepad driver2) {
     this.drivetrain = drivetrain;
     this.driver = driver2;
 
@@ -28,18 +27,18 @@ public class DrivetrainDrive extends CommandBase {
     // Mapped to symetric max values from shuffleboard
     this.speedSetpoint = IStream.create(() -> driver2.getRightTrigger() - driver2.getLeftTrigger())
         .filtered(
-            x -> SLMath.map(x, -1, 1, -Settings.Drivetrain.MAX_SPEED.get(), Settings.Drivetrain.MAX_SPEED.get()),
-            x -> SLMath.deadband(x, Settings.Drivetrain.SPEED_DEADBAND.get()),
-            x -> SLMath.spow(x, Settings.Drivetrain.SPEED_POWER.get()),
-            new LowPassFilter(Settings.Drivetrain.SPEED_FILTER));
+            x -> SLMath.map(x, -1, 0.7, -0.5, 0.6),
+            x -> SLMath.deadband(x, 0.0),
+            x -> SLMath.spow(x, 2.0),
+            new LowPassFilter(0.25));
 
     this.angleSetpoint = IStream.create(() -> -driver2.getLeftX())
         .filtered(
-            x -> SLMath.map(x, -1, 1, -Settings.Drivetrain.MAX_SPEED_ANGLE.get(),
-                Settings.Drivetrain.MAX_SPEED_ANGLE.get()),
-            x -> SLMath.deadband(x, Settings.Drivetrain.ANGLE_DEADBAND.get()),
-            x -> SLMath.spow(x, Settings.Drivetrain.ANGLE_POWER.get()),
-            new LowPassFilter(Settings.Drivetrain.ANGLE_FILTER));
+            x -> SLMath.map(x, -1, 0.7, -0.85,
+                0.85),
+            x -> SLMath.deadband(x, 0.10),
+            x -> SLMath.spow(x, 1.0),
+            new LowPassFilter(0.005));
 
     addRequirements(drivetrain);
 
