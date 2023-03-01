@@ -6,17 +6,14 @@ package frc.robot;
 
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.commands.ArmsCloseCone;
-import frc.robot.commands.ArmsOpen;
+
 import frc.robot.commands.DrivetrainDrive;
-import frc.robot.commands.armDown;
-import frc.robot.commands.armStop;
-import frc.robot.commands.armUp;
-import frc.robot.commands.defaultAuto;
-import frc.robot.commands.doNothing;
-import frc.robot.commands.dumbArmStop;
-import frc.robot.commands.dumbdArmIn;
-import frc.robot.commands.resetOdometry;
+import frc.robot.commands.autoCommands.defaultAuto;
+import frc.robot.commands.dopeSlopeCommands.armDown;
+import frc.robot.commands.dopeSlopeCommands.armStop;
+import frc.robot.commands.dopeSlopeCommands.armUp;
+import frc.robot.commands.dopeSlopeCommands.dumbArmStop;
+import frc.robot.commands.miscCommands.resetOdometry;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.Arms;
