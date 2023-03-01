@@ -12,6 +12,9 @@ import frc.robot.commands.DrivetrainDrive;
 import frc.robot.commands.armDown;
 import frc.robot.commands.armStop;
 import frc.robot.commands.armUp;
+import frc.robot.commands.doNothing;
+import frc.robot.commands.dumbArmStop;
+import frc.robot.commands.dumbdArmIn;
 import frc.robot.commands.resetOdometry;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmSubsystem;
@@ -57,13 +60,15 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public final AutoGamepad driver = new AutoGamepad(0);
-  public final AutoGamepad spotter = new AutoGamepad(1);
+  public final AutoGamepad spotter = new AutoGamepad(2);
 
   public final Arms mannArm = new Arms();
 
   public final Intake intake = new Intake();
   
   public final Vision vision = new Vision();
+
+  public final Arm dumbArm = new Arm();
   
   public final DriveSubsystem driveTrain = new DriveSubsystem(vision);
 
@@ -80,20 +85,22 @@ public class RobotContainer {
   public void configureDefualtCommands(){
     driveTrain.setDefaultCommand(new DrivetrainDrive(driveTrain, driver));
     arm.setDefaultCommand(new armStop(arm));
+    dumbArm.setDefaultCommand(new dumbArmStop(dumbArm));
   }
   public void configureCommnads(){
     driver.getDPadLeft().whileTrue(new resetOdometry(driveTrain));
-    driver.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
-    driver.getLeftButton().whileTrue(new ArmsOpen(mannArm));
+    //driver.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
+    //driver.getLeftButton().whileTrue(new ArmsOpen(mannArm));
+    //driver.getDPadDown().whileTrue(new dumbdArmIn(dumbArm));
 
     //spotter controller arm
-    spotter.getDPadUp().onTrue(new armUp(arm, 10000000));
-    spotter.getDPadLeft().onTrue(new armUp(arm, 1000000));
-    spotter.getDPadRight().onTrue(new armUp(arm, 10000));
+    spotter.getDPadUp().onTrue(new armUp(arm, -260000));
+    spotter.getDPadLeft().onTrue(new armUp(arm, -170000));
+    spotter.getDPadRight().onTrue(new armUp(arm, -140000));
     spotter.getDPadDown().onTrue(new armDown(arm));
     //spotter manndible
-    spotter.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
-    spotter.getLeftButton().whileTrue(new ArmsOpen(mannArm));
+    //spotter.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
+    //spotter.getLeftButton().whileTrue(new ArmsOpen(mannArm));
     //NOT FINAL VERSION OF COMMAND
   }
 
@@ -204,7 +211,8 @@ public class RobotContainer {
 }
 
 public Command getAutonomousCommand(boolean isFirstPath){
-   return new SequentialCommandGroup(drivePath(true, "Pos3Across"), visionAlign());
+   //return new SequentialCommandGroup(drivePath(true, "Pos3Across"), visionAlign());
+   return new doNothing();
    //return drivePath(isFirstPath, "markToComm").andThen(visionAlign(), null);
   }
   

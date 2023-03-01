@@ -6,17 +6,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.ArmSubsystem;
 
-public class armUp extends CommandBase {
-  /** Creates a new armUp. */
-  private ArmSubsystem arm;
-  private double pos;
-  public armUp(ArmSubsystem arm, double armPos) {
+public class dumbArmStop extends CommandBase {
+  /** Creates a new dumbArmStop. */
+  private Arm dumbArm;
+  public dumbArmStop(Arm dumbArm) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(arm);
-    this.arm= arm;
-    this.pos = armPos;
+    addRequirements(dumbArm);
+    this.dumbArm = dumbArm;
   }
 
   // Called when the command is initially scheduled.
@@ -26,8 +23,7 @@ public class armUp extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //dumbArm.inverseSet();
-    arm.setPosition(pos);
+    dumbArm.stop();
   }
 
   // Called once the command ends or is interrupted.

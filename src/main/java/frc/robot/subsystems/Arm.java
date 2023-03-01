@@ -29,8 +29,8 @@ public class Arm extends SubsystemBase {
   /** Creates a new arm. */
   private PIDController pidController = new PIDController(0.2,0.1,0.1);
   
-  public WPI_TalonFX rightElevator = new WPI_TalonFX(21);
-  public WPI_TalonFX leftElevator = new WPI_TalonFX(20);
+  public WPI_TalonFX rightElevator = new WPI_TalonFX(30);
+  public WPI_TalonFX leftElevator = new WPI_TalonFX(31);
   
   public final SimpleMotorFeedforward armFeedForward = new SimpleMotorFeedforward(1.0,1.0);
   private TrapezoidProfile.Constraints m_Constraints = 
@@ -104,8 +104,8 @@ public class Arm extends SubsystemBase {
     }
 
     public void set(){
-      leftElevator.set(0.5);
-      rightElevator.set(0.5);
+      leftElevator.set(0.2);
+      rightElevator.set(0.2);
     }
 
     public void inverseSet(){
