@@ -65,6 +65,11 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
+  public static final class armPositionControl{
+    public static final int highPosition = -260000;
+    public static final int mediumPosition = -170000;
+  } 
+
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 0.15;
     public static final double kMaxAccelerationMetersPerSecondSquared = 0.1;

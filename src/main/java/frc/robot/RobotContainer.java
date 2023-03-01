@@ -12,6 +12,7 @@ import frc.robot.commands.DrivetrainDrive;
 import frc.robot.commands.armDown;
 import frc.robot.commands.armStop;
 import frc.robot.commands.armUp;
+import frc.robot.commands.defaultAuto;
 import frc.robot.commands.doNothing;
 import frc.robot.commands.dumbArmStop;
 import frc.robot.commands.dumbdArmIn;
@@ -44,6 +45,8 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -74,13 +77,17 @@ public class RobotContainer {
 
   public final ArmSubsystem arm = new ArmSubsystem();
 
+  SendableChooser<Command> m_Chooser =  new SendableChooser<>();
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
+    SmartDashboard.putData(m_Chooser);
     configureDefualtCommands();
     configureCommnads();
     PathPlannerServer.startServer(5811);
+    m_Chooser.setDefaultOption("Default", new defaultAuto(arm, intake, mannArm));
   }
   public void configureDefualtCommands(){
     driveTrain.setDefaultCommand(new DrivetrainDrive(driveTrain, driver));
@@ -94,9 +101,9 @@ public class RobotContainer {
     //driver.getDPadDown().whileTrue(new dumbdArmIn(dumbArm));
 
     //spotter controller arm
-    spotter.getDPadUp().onTrue(new armUp(arm, -260000));
-    spotter.getDPadLeft().onTrue(new armUp(arm, -170000));
-    spotter.getDPadRight().onTrue(new armUp(arm, -140000));
+    spotter.getDPadUp().onTrue(new armUp(arm, Constants.armPositionControl.highPosition));
+    spotter.getDPadLeft().onTrue(new armUp(arm, Constants.armPositionControl.mediumPosition));
+    //low position is -140000 is needed.
     spotter.getDPadDown().onTrue(new armDown(arm));
     //spotter manndible
     //spotter.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
@@ -211,9 +218,9 @@ public class RobotContainer {
 }
 
 public Command getAutonomousCommand(boolean isFirstPath){
-   //return new SequentialCommandGroup(drivePath(true, "Pos3Across"), visionAlign());
-   return new doNothing();
+   //return new SequentialCommandGroup(drivePath(true, "Pos3Across"), visionAlign()); 
    //return drivePath(isFirstPath, "markToComm").andThen(visionAlign(), null);
+  return m_Chooser.getSelected();
   }
   
 }

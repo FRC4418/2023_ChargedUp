@@ -171,4 +171,8 @@ public class ArmSubsystem extends SubsystemBase {
         }
     
       }
+
+      public double getMasterPos(){
+        return armMotorMaster.getSelectedSensorPosition();
+      }
 }

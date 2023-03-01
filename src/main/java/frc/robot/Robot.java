@@ -12,7 +12,9 @@ import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.defaultAuto;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -36,7 +38,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     SmartDashboard.putData("Field", m_field);    
-
+    
 
   }
 
@@ -67,9 +69,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand(true);
-
-    PathPlannerTrajectory examplePath = PathPlanner.loadPath("lineCurvePath", new PathConstraints(0.4, 0.2));
-    m_field.getObject("Traj").setTrajectory(examplePath);
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

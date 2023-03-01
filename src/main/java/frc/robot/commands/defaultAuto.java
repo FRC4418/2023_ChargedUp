@@ -5,18 +5,24 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.Arms;
+import frc.robot.subsystems.Intake;
 
-public class armUp extends CommandBase {
-  /** Creates a new armUp. */
+public class defaultAuto extends CommandBase {
+  /** Creates a new defaultAuto. */
   private ArmSubsystem arm;
-  private double pos;
-  public armUp(ArmSubsystem arm, double armPos) {
+  private Intake intake;
+  private Arms mandibleArms;
+  public defaultAuto(ArmSubsystem arm, Intake intake, Arms mandibleArms) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(arm);
-    this.arm= arm;
-    this.pos = armPos;
+    addRequirements(arm, intake, mandibleArms);
+    this.arm = arm;
+    this.intake = intake;
+    this.mandibleArms = mandibleArms;
   }
 
   // Called when the command is initially scheduled.
@@ -26,8 +32,13 @@ public class armUp extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //dumbArm.inverseSet();
-    arm.setPosition(pos);
+    new SequentialCommandGroup(
+      new ArmsCloseCone(mandibleArms, 0), 
+      new IntakePull(intake),
+      new WaitCommand(0.5),
+      new armUp(arm, Constants.armPositionControl.highPosition),
+      new IntakePush(intake)
+    ); 
   }
 
   // Called once the command ends or is interrupted.
@@ -37,11 +48,6 @@ public class armUp extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //EXPERIMENTAL SECTION
-    if(arm.getMasterPos() < pos){
-      return false;
-    }else{
-      return true;
-    }
+    return false;
   }
 }
