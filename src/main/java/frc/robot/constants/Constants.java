@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -65,6 +65,11 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
+  public static final class visionTrajEndPoint{
+    public static final double xOffset = 0.8;
+    public static final double yOffset = 0.0;
+  }
+
   public static final class armPositionControl{
     public static final int highPosition = -260000;
     public static final int mediumPosition = -170000;
@@ -77,6 +82,12 @@ public final class Constants {
     // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = 0.7;
+  }
+
+  public static final class AutoPIDs{
+    public static final double kP = 2.6;
+    public static final double kI = 3.8;
+    public static final double kD = 0.25;
   }
 
 public static final Pose3d kFarTargetPose = new Pose3d(new Translation3d(Units.inchesToMeters(6.25),Units.inchesToMeters(15.13),0), new Rotation3d(0.0,0.0,Units.degreesToRadians(0)));

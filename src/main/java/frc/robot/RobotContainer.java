@@ -4,15 +4,19 @@
 
 package frc.robot;
 
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DrivetrainDrive;
 import frc.robot.commands.autoCommands.defaultAuto;
 import frc.robot.commands.dopeSlopeCommands.armDown;
 import frc.robot.commands.dopeSlopeCommands.armStop;
 import frc.robot.commands.dopeSlopeCommands.armUp;
 import frc.robot.commands.dopeSlopeCommands.dumbArmStop;
+import frc.robot.commands.manndibleCommands.ArmsCloseCone;
+import frc.robot.commands.manndibleCommands.ArmsOpen;
 import frc.robot.commands.miscCommands.resetOdometry;
+import frc.robot.constants.Constants;
+import frc.robot.constants.Ports;
+import frc.robot.constants.Constants.AutoConstants;
+import frc.robot.constants.Constants.DriveConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.Arms;
@@ -58,8 +62,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  public final AutoGamepad driver = new AutoGamepad(0);
-  public final AutoGamepad spotter = new AutoGamepad(2);
+  public final AutoGamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);
+  public final AutoGamepad spotter = new AutoGamepad(Ports.Gamepad.OPERATOR);
 
   public final Arms mannArm = new Arms();
 
@@ -73,8 +77,14 @@ public class RobotContainer {
 
   public final ArmSubsystem arm = new ArmSubsystem();
 
-  private PIDController leftPID = new PIDController(2.6, 3.8, 0.25);
-  private PIDController rightPID = new PIDController(2.6, 3.8, 0.25);
+  private PIDController leftPID = new PIDController(
+    Constants.AutoPIDs.kP, 
+    Constants.AutoPIDs.kI,
+    Constants.AutoPIDs.kD);
+  private PIDController rightPID = new PIDController(
+    Constants.AutoPIDs.kP, 
+    Constants.AutoPIDs.kI,
+    Constants.AutoPIDs.kD);
 
   SendableChooser<Command> m_Chooser =  new SendableChooser<>();
 
@@ -97,7 +107,7 @@ public class RobotContainer {
     dumbArm.setDefaultCommand(new dumbArmStop(dumbArm));
   }
   public void configureCommnads(){
-    driver.getDPadLeft().whileTrue(new resetOdometry(driveTrain));
+    driver.getDPadRight().whileTrue(new resetOdometry(driveTrain, mannArm));
     //driver.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
     //driver.getLeftButton().whileTrue(new ArmsOpen(mannArm));
     //driver.getDPadDown().whileTrue(new dumbdArmIn(dumbArm));
@@ -105,11 +115,11 @@ public class RobotContainer {
     //spotter controller arm
     spotter.getDPadUp().onTrue(new armUp(arm, Constants.armPositionControl.highPosition));
     spotter.getDPadLeft().onTrue(new armUp(arm, Constants.armPositionControl.mediumPosition));
-    //low position is -140000 is needed.
+    //low position is -140000 if needed.
     spotter.getDPadDown().onTrue(new armDown(arm));
     //spotter manndible
-    //spotter.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
-    //spotter.getLeftButton().whileTrue(new ArmsOpen(mannArm));
+    spotter.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
+    spotter.getLeftButton().whileTrue(new ArmsOpen(mannArm));
     //NOT FINAL VERSION OF COMMAND
   }
 
@@ -149,7 +159,10 @@ public class RobotContainer {
     Trajectory photonTrak = TrajectoryGenerator.generateTrajectory(
         vision.getCameraToTarget(),
         List.of(), 
-        new Pose2d(0.8,0.0, new Rotation2d(Units.degreesToRadians(180))),
+        new Pose2d(
+          Constants.visionTrajEndPoint.xOffset,
+          Constants.visionTrajEndPoint.yOffset, 
+          new Rotation2d(Units.degreesToRadians(180))),
         config
       );
 

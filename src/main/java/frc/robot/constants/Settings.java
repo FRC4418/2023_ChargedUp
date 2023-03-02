@@ -85,45 +85,4 @@ public interface Settings {
                             * GearRatio.ENCODER_TO_WHEEL;
         }
     }
-
-    public interface Feeder{
-        SmartNumber FEEDER_FED = new SmartNumber("Feeder and Shooter Settings/Feeder Position Fed", 1.0);
-
-        SmartNumber FEEDER_NOT_FED = new SmartNumber("Feeder and Shooter Settings/Feeder Position Not Fed", -1.0);
-
-
-        
-
-        public interface PID {
-            int kSlot = 0;
-            double kF = 0;
-            double kP = 0.02;
-            double kI = 0.00001;
-            double kD = 0.001;
-            double kTimeoutMs = 50;
-        }
-    }
-
-    public interface Shooter {
-        // Low Pass Filter and deadband for Feeder Controls
-        SmartNumber SHOOT_SPEED = new SmartNumber("Feeder and Shooter Settings/Shooting Speed", 230000.0);
-        SmartNumber SHOOT_PERCENT = new SmartNumber("Shooter Settings/Back Wheel Percent Output", -1);
-
-        public interface PID {
-            int kSlot = 0;
-            double kF = 0;
-            double kP = 0.005;
-            double kI = 0;
-            double kD = 0;
-            double kTimeoutMs = 50;
-        }
-    }
-    public interface Climber {
-        SmartNumber WINCH_POWER = new SmartNumber("Climber Settings/Climber Speed", 0.75);
-
-        SmartNumber RATCHET_ENGAGE_ANGLE = new SmartNumber("Climber Settings/Ratchet Engage Angle", 40);
-
-        SmartNumber RATCHET_RELEASE_ANGLE = new SmartNumber("Climber Settings/Ratchet Release Angle", 0);
-    }
-
 }
