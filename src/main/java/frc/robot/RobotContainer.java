@@ -73,12 +73,18 @@ public class RobotContainer {
 
   public final ArmSubsystem arm = new ArmSubsystem();
 
+  private PIDController leftPID = new PIDController(2.6, 3.8, 0.25);
+  private PIDController rightPID = new PIDController(2.6, 3.8, 0.25);
+
   SendableChooser<Command> m_Chooser =  new SendableChooser<>();
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
+    SmartDashboard.putData("Left Auto PID", leftPID);
+    SmartDashboard.putData("Right Auto PID", rightPID);
+
     SmartDashboard.putData(m_Chooser);
     configureDefualtCommands();
     configureCommnads();
@@ -204,8 +210,8 @@ public class RobotContainer {
           new SimpleMotorFeedforward(0.66871, 1.98, 0.61067),
           driveTrain.kinematics, // DifferentialDriveKinematics
           driveTrain::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
-          new PIDController(2.6, 3.8, 0.25), // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-          new PIDController(2.6, 3.8, 0.25), // Right controller (usually the same values as left controller)
+          leftPID, // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+          rightPID, // Right controller (usually the same values as left controller)
           driveTrain::tankDriveVolts, // Voltage bicnsumer
           false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
           driveTrain // Requires this drive subsystem
