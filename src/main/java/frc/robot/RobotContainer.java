@@ -6,7 +6,6 @@ package frc.robot;
 
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-
 import frc.robot.commands.DrivetrainDrive;
 import frc.robot.commands.autoCommands.defaultAuto;
 import frc.robot.commands.dopeSlopeCommands.armDown;
