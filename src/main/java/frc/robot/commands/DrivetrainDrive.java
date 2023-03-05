@@ -10,7 +10,11 @@ import com.stuypulse.stuylib.math.SLMath;
 import com.stuypulse.stuylib.streams.IStream;
 import com.stuypulse.stuylib.streams.filters.LowPassFilter;
 
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.constants.Settings;
 import frc.robot.subsystems.*;
 
 public class DrivetrainDrive extends CommandBase {
@@ -22,20 +26,20 @@ public class DrivetrainDrive extends CommandBase {
   public DrivetrainDrive(DriveSubsystem drivetrain, AutoGamepad driver2) {
     this.drivetrain = drivetrain;
     this.driver = driver2;
-
+    
     // Gives 1 to -1, and 0 when both triggers are held down
     // Mapped to symetric max values from shuffleboard
     this.speedSetpoint = IStream.create(() -> driver2.getRightTrigger() - driver2.getLeftTrigger())
         .filtered(
-            x -> SLMath.map(x, -1, 0.65, -0.5, 0.6),
+            x -> SLMath.map(x, -1, 1, -0.4, 0.4),
             x -> SLMath.deadband(x, 0.0),
             x -> SLMath.spow(x, 2.0),
             new LowPassFilter(0.25));
 
     this.angleSetpoint = IStream.create(() -> -driver2.getLeftX())
         .filtered(
-            x -> SLMath.map(x, -1, 0.7, -0.85,
-                0.55),
+            x -> SLMath.map(x, -1, 1, -0.4,
+                0.4),
             x -> SLMath.deadband(x, 0.10),
             x -> SLMath.spow(x, 1.0),
             new LowPassFilter(0.005));

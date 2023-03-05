@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmSubsystem;
 
-public class armUp extends CommandBase {
+public class armHoldAt extends CommandBase {
   /** Creates a new armUp. */
   private ArmSubsystem arm;
   private double pos;
-  public armUp(ArmSubsystem arm, double armPos) {
+  public armHoldAt(ArmSubsystem arm, double armPos) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(arm);
     this.arm= arm;
@@ -27,6 +27,7 @@ public class armUp extends CommandBase {
   @Override
   public void execute() {
     //dumbArm.inverseSet();
+    System.out.println(arm.getMasterPos());
     arm.setPosition(pos);
   }
 
@@ -38,10 +39,11 @@ public class armUp extends CommandBase {
   @Override
   public boolean isFinished() {
     //EXPERIMENTAL SECTION
-    if(arm.getMasterPos() < pos){
-      return false;
-    }else{
-      return true;
-    }
+    // if(arm.getMasterPos() > pos+10000){
+    //   return false;
+    // }else{
+    //   return true;
+    // }
+    return false;
   }
 }

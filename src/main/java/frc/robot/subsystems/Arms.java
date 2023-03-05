@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 public class Arms extends SubsystemBase {
@@ -17,6 +18,11 @@ public class Arms extends SubsystemBase {
   public Arms() {
     armsMotor.configFactoryDefault();
     resetEncoders();
+    armsMotor.setNeutralMode(NeutralMode.Brake);
+  }
+
+  public void stop(){
+    armsMotor.set(0);
   }
 
   public void resetEncoders(){
@@ -30,9 +36,10 @@ public class Arms extends SubsystemBase {
 
 
   @Override
-  public void periodic() {
-     
-    
+  public void periodic() {}
+
+  public void resetEncoder(){
+    armsMotor.setSelectedSensorPosition(0);
   }
 
   public double getPos(){

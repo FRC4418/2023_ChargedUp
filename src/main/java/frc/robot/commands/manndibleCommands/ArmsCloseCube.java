@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /** An example command that uses an example subsystem. */
 public class ArmsCloseCube extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Arms m_subsystem;
+  private final Arms arms;
   double position;
 
   /**
@@ -18,11 +18,10 @@ public class ArmsCloseCube extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArmsCloseCube(Arms subsystem, double pos) {
-    m_subsystem = subsystem;
+  public ArmsCloseCube(Arms arms) {
+    this.arms = arms;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
-    this.position = pos;
+    addRequirements(arms);
   }
 
   // Called when the command is initially scheduled.
@@ -32,18 +31,20 @@ public class ArmsCloseCube extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled. (this requires tuning, this numebr represents the position, not speed)
   @Override
   public void execute() {
-    System.out.println(m_subsystem.getPos());
-    if(m_subsystem.getPos()<-position){
-      m_subsystem.grab(.15);
-    }else{
-      m_subsystem.grab(0);
+    System.out.println(arms.getPos());
+    if(arms.getPos() < -25000){
+      arms.grab(0.2);
+    } else if(arms.getPos() > -25000){
+      arms.grab(-0.2);
+    } else{
+      arms.stop();
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_subsystem.grab(0);
+    arms.grab(0);
   }
 
   // Returns true when the command should end.

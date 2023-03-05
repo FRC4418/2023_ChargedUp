@@ -5,6 +5,7 @@
 package frc.robot.commands.miscCommands;
 
 import frc.robot.constants.Ports.Intake;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.Arms;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,17 +15,19 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class resetOdometry extends CommandBase {
   private final DriveSubsystem driveTrain;
   private final Arms arms;
+  private final ArmSubsystem arm;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public resetOdometry(DriveSubsystem driveTrain, Arms arms) {
+  public resetOdometry(DriveSubsystem driveTrain, Arms arms, ArmSubsystem arm) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveTrain, arms);
+    addRequirements(driveTrain, arms, arm);
     this.driveTrain = driveTrain;
     this.arms = arms;
+    this.arm = arm;
   }
 
   // Called when the command is initially scheduled.
@@ -36,6 +39,7 @@ public class resetOdometry extends CommandBase {
   public void execute() {
     driveTrain.resetOdometry(new Pose2d());
     arms.resetEncoders();
+    arm.resetSensor();
   }
 
   // Called once the command ends or is interrupted.

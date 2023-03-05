@@ -8,10 +8,21 @@ import frc.robot.commands.DrivetrainDrive;
 import frc.robot.commands.autoCommands.defaultAuto;
 import frc.robot.commands.dopeSlopeCommands.armDown;
 import frc.robot.commands.dopeSlopeCommands.armStop;
-import frc.robot.commands.dopeSlopeCommands.armUp;
+import frc.robot.commands.dopeSlopeCommands.armGoTo;
+import frc.robot.commands.dopeSlopeCommands.armHoldAt;
 import frc.robot.commands.dopeSlopeCommands.dumbArmStop;
 import frc.robot.commands.manndibleCommands.ArmsCloseCone;
+import frc.robot.commands.manndibleCommands.ArmsCloseCube;
+import frc.robot.commands.manndibleCommands.ArmsCloseCubeAuto;
 import frc.robot.commands.manndibleCommands.ArmsOpen;
+import frc.robot.commands.manndibleCommands.ArmsOpenAuto;
+import frc.robot.commands.manndibleCommands.Calibrate;
+import frc.robot.commands.manndibleCommands.IntakePull;
+import frc.robot.commands.manndibleCommands.IntakePullAuto;
+import frc.robot.commands.manndibleCommands.IntakePush;
+import frc.robot.commands.manndibleCommands.armsClose;
+import frc.robot.commands.dopeSlopeCommands.armGoTo;
+import frc.robot.commands.dopeSlopeCommands.armHoldAt;
 import frc.robot.commands.miscCommands.resetOdometry;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Ports;
@@ -49,8 +60,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -70,8 +83,6 @@ public class RobotContainer {
   public final Intake intake = new Intake();
   
   public final Vision vision = new Vision();
-
-  public final Arm dumbArm = new Arm();
   
   public final DriveSubsystem driveTrain = new DriveSubsystem(vision);
 
@@ -104,22 +115,26 @@ public class RobotContainer {
   public void configureDefualtCommands(){
     driveTrain.setDefaultCommand(new DrivetrainDrive(driveTrain, driver));
     arm.setDefaultCommand(new armStop(arm));
-    dumbArm.setDefaultCommand(new dumbArmStop(dumbArm));
   }
   public void configureCommnads(){
-    driver.getDPadRight().whileTrue(new resetOdometry(driveTrain, mannArm));
+    driver.getDPadRight().whileTrue(new resetOdometry(driveTrain, mannArm, arm));
+    driver.getRightButton().whileTrue(new armsClose(mannArm));
+    driver.getLeftButton().whileTrue(new ArmsOpen(mannArm));
     //driver.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
     //driver.getLeftButton().whileTrue(new ArmsOpen(mannArm));
     //driver.getDPadDown().whileTrue(new dumbdArmIn(dumbArm));
 
     //spotter controller arm
-    spotter.getDPadUp().onTrue(new armUp(arm, Constants.armPositionControl.highPosition));
-    spotter.getDPadLeft().onTrue(new armUp(arm, Constants.armPositionControl.mediumPosition));
+    spotter.getDPadUp().onTrue(new armHoldAt(arm, -290000));
+    spotter.getDPadLeft().onTrue(new armHoldAt(arm, -170000));
     //low position is -140000 if needed.
-    spotter.getDPadDown().onTrue(new armDown(arm));
+    spotter.getDPadDown().whileTrue(new armDown(arm));
     //spotter manndible
-    spotter.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
-    spotter.getLeftButton().whileTrue(new ArmsOpen(mannArm));
+    spotter.getTopButton().whileTrue(new ArmsCloseCone(mannArm));
+    spotter.getBottomButton().whileTrue(new ArmsCloseCube(mannArm));
+    spotter.getRightButton().whileTrue(new IntakePush(intake));
+    spotter.getLeftButton().whileTrue(new IntakePull(intake));
+    spotter.getRightBumper().whileTrue(new Calibrate(mannArm));
     //NOT FINAL VERSION OF COMMAND
   }
 
@@ -203,7 +218,7 @@ public class RobotContainer {
   public Command drivePath(boolean isFirstPath, String nameOfPath) {
     // An example command will be run in autonomous
 
-    PathPlannerTrajectory drivePath1 = PathPlanner.loadPath(nameOfPath, new PathConstraints(0.2, 0.2));
+    PathPlannerTrajectory drivePath1 = PathPlanner.loadPath(nameOfPath, new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
     PathPlannerServer.sendActivePath(drivePath1.getStates());
 
     return new SequentialCommandGroup(
@@ -235,7 +250,10 @@ public class RobotContainer {
 public Command getAutonomousCommand(boolean isFirstPath){
    //return new SequentialCommandGroup(drivePath(true, "Pos3Across"), visionAlign()); 
    //return drivePath(isFirstPath, "markToComm").andThen(visionAlign(), null);
-  return m_Chooser.getSelected();
-  }
-  
+  //return m_Chooser.getSelected();
+  //ParallelCommandGroup mandibleStuff = new ParallelCommandGroup(new ArmsCloseCubeAuto(mannArm), new IntakePull(intake));
+  //SequentialCommandGroup armStuff = new SequentialCommandGroup(new armGoTo(arm, Constants.armPositionControl.mediumPosition), new ParallelCommandGroup(new IntakePush(intake), new ArmsOpen(mannArm)));
+  return new IntakePullAuto(intake).andThen(new armGoTo(arm, Constants.armPositionControl.highPosition)).andThen(new WaitCommand(3)).andThen(new IntakePush(intake));
+  //return new ParallelCommandGroup(mandibleStuff, armStuff);   
+}
 }

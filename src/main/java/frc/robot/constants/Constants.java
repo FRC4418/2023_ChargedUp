@@ -61,22 +61,18 @@ public final class Constants {
     public static final double kPDriveVel = 8.5;
   }
 
-  public static final class OIConstants {
-    public static final int kDriverControllerPort = 0;
-  }
-
   public static final class visionTrajEndPoint{
     public static final double xOffset = 0.8;
     public static final double yOffset = 0.0;
   }
 
   public static final class armPositionControl{
-    public static final int highPosition = -260000;
+    public static final int highPosition = -276000;
     public static final int mediumPosition = -170000;
   } 
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 0.15;
+    public static final double kMaxSpeedMetersPerSecond = 0.3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 0.1;
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
@@ -90,7 +86,5 @@ public final class Constants {
     public static final double kD = 0.25;
   }
 
-public static final Pose3d kFarTargetPose = new Pose3d(new Translation3d(Units.inchesToMeters(6.25),Units.inchesToMeters(15.13),0), new Rotation3d(0.0,0.0,Units.degreesToRadians(0)));
-//public static Transform3d kCameraToRobot;
 public static Transform3d kCameraToRobot = new Transform3d(new Translation3d(0.56,0.25,0), new Rotation3d(0,0,0));
 }

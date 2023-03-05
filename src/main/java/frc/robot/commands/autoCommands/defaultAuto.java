@@ -5,9 +5,10 @@
 package frc.robot.commands.autoCommands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.dopeSlopeCommands.armUp;
+import frc.robot.commands.dopeSlopeCommands.armGoTo;
 import frc.robot.commands.manndibleCommands.ArmsCloseCone;
 import frc.robot.commands.manndibleCommands.IntakePull;
 import frc.robot.commands.manndibleCommands.IntakePush;
@@ -36,13 +37,19 @@ public class defaultAuto extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    new SequentialCommandGroup(
-      new ArmsCloseCone(mandibleArms, 0), 
-      new IntakePull(intake),
-      new WaitCommand(0.5),
-      new armUp(arm, Constants.armPositionControl.highPosition),
-      new IntakePush(intake)
-    ); 
+    // new SequentialCommandGroup(
+    //   new ArmsCloseCone(mandibleArms, 0), 
+    //   new IntakePull(intake),
+    //   new WaitCommand(0.5),
+    //   new armUp(arm, Constants.armPositionControl.highPosition),
+    //   new IntakePush(intake)
+    //);
+    //ParallelCommandGroup manndibleStuff = new ParallelCommandGroup(new ArmsCloseCone(mandibleArms, 0), new IntakePull(intake));
+    //SequentialCommandGroup armStuff = new SequentialCommandGroup(new armUp(arm, Constants.armPositionControl.highPosition), new IntakePush(intake));
+    
+    //new ParallelCommandGroup(manndibleStuff, armStuff);
+    System.out.println(arm.getMasterPos());
+    new armGoTo(arm, Constants.armPositionControl.highPosition);
   }
 
   // Called once the command ends or is interrupted.

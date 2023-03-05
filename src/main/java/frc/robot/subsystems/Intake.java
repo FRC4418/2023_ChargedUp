@@ -10,8 +10,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 public class Intake extends SubsystemBase {
-  final WPI_TalonFX wheel1Motor = new WPI_TalonFX(20);
-  final WPI_TalonFX wheel2Motor = new WPI_TalonFX(22);
+  final WPI_TalonFX wheel1Motor = new WPI_TalonFX(22);
+  final WPI_TalonFX wheel2Motor = new WPI_TalonFX(20);
   /** Creates a new ExampleSubsystem. */
   public Intake() {
     wheel1Motor.configFactoryDefault();
@@ -20,7 +20,7 @@ public class Intake extends SubsystemBase {
 
   public void intake(double speed){
     wheel1Motor.set(speed);
-    wheel2Motor.set(speed);
+    wheel2Motor.set(-speed);
   }
 
   @Override

@@ -2,25 +2,21 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.manndibleCommands;
+package frc.robot.commands.dopeSlopeCommands;
 
-import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.ArmSubsystem;
 
-/** An example command that uses an example subsystem. */
-public class IntakePull extends CommandBase {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Intake m_subsystem;
-
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
-  public IntakePull(Intake subsystem) {
-    m_subsystem = subsystem;
+public class armGoTo extends CommandBase {
+  /** Creates a new armUp. */
+  private ArmSubsystem arm;
+  private double pos;
+  public armGoTo(ArmSubsystem arm, double armPos) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(arm);
+    this.arm= arm;
+    this.pos = armPos;
   }
 
   // Called when the command is initially scheduled.
@@ -30,19 +26,24 @@ public class IntakePull extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("This command is being run");
-    m_subsystem.intake(0.75);
+    //dumbArm.inverseSet();
+    System.out.println(arm.getMasterPos());
+    arm.setPosition(pos);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    m_subsystem.intake(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    //EXPERIMENTAL SECTION
+    if(arm.getMasterPos() > pos+10000){
+      return false;
+    }else{
+      return true;
+    }
+    //return false;
   }
 }

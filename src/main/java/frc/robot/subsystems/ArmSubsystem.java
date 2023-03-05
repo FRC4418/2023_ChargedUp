@@ -18,12 +18,12 @@ public class ArmSubsystem extends SubsystemBase {
     final WPI_TalonFX armMotorMaster = new WPI_TalonFX(30);
     final WPI_TalonFX armMotorSlave = new WPI_TalonFX(31); 
 
-    private int peakVelocityUp = 27360;
+    private int peakVelocityUp = 273600;
     private final double percentOfPeakUp = .75;
     private final double upkF = (percentOfPeakUp * 2048) / (peakVelocityUp * percentOfPeakUp);
     private final double cruiseVelocityAccelUp = peakVelocityUp * percentOfPeakUp;
 
-    private int peakVelocityDown = 7090;
+    private int peakVelocityDown = 3090;
     private final double percentOfPeakDown = .35;
     private final double downkF = (percentOfPeakDown * 2048) / (peakVelocityDown * percentOfPeakDown);
     private final double cruiseVelocityAccelDown = peakVelocityDown * percentOfPeakDown;
@@ -74,14 +74,9 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void dumbGoToHome(){
-        while(armMotorMaster.getSelectedSensorPosition() > 500){
-            if(armMotorMaster.getSelectedSensorPosition() > 10000){
-                armMotorMaster.set(-0.4);
+            if(armMotorMaster.getSelectedSensorPosition() < -8000){
+                armMotorMaster.set(0.4);
             }
-            if(armMotorMaster.getSelectedSensorPosition() > 5000){
-                armMotorMaster.set(-0.2);
-            }
-        }
     }
 
     public void slowlyGoDown() {
@@ -100,13 +95,9 @@ public class ArmSubsystem extends SubsystemBase {
         );
     }
 
-    public Command stop() {
-        return runOnce(
-            () -> {
+    public void stop(){
                 armMotorMaster.set(TalonFXControlMode.PercentOutput, 0);
                 armMotorSlave.set(TalonFXControlMode.PercentOutput, 0);
-            }
-        );
     }
 
     public Command resetSensor() {

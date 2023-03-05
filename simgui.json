@@ -3,6 +3,8 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Left Auto PID": "PIDController",
+      "/SmartDashboard/Right Auto PID": "PIDController",
       "/SmartDashboard/SendableChooser[0]": "String Chooser"
     },
     "windows": {

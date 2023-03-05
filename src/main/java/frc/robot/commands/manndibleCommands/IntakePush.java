@@ -20,7 +20,6 @@ public class IntakePush extends CommandBase {
   public IntakePush(Intake subsystem) {
     m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -30,7 +29,7 @@ public class IntakePush extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_subsystem.intake(.2);
+    m_subsystem.intake(-0.25);
   }
 
   // Called once the command ends or is interrupted.

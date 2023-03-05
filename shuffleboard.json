@@ -25,6 +25,31 @@
         "titleType": 0,
         "tiles": {}
       }
+    },
+    {
+      "title": "Drive Settings",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "network_table:///SmartDashboard/Driver Settings/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "7,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Driver Settings/Max Speed",
+              "_title": "Base Turn Speed"
+            }
+          }
+        }
+      }
     }
   ],
   "windowGeometry": {

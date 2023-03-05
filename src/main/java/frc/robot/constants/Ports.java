@@ -4,7 +4,7 @@ public interface Ports {
 
     public interface Gamepad{
         int DRIVER = 0;
-        int OPERATOR = 2;
+        int OPERATOR = 1;
     }
 
     public interface Intake{

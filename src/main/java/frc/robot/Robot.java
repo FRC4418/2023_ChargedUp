@@ -98,6 +98,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     m_robotContainer.driveTrain.periodic();
+    SmartDashboard.putNumber("Intake Pos Motor", m_robotContainer.mannArm.getPos());
   }
 
   @Override
