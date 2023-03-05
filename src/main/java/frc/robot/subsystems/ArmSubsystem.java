@@ -6,14 +6,20 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
 public class ArmSubsystem extends SubsystemBase {
+    final CANSparkMax babyNeo = new CANSparkMax(1, MotorType.kBrushless);
 
     final WPI_TalonFX armMotorMaster = new WPI_TalonFX(30);
     final WPI_TalonFX armMotorSlave = new WPI_TalonFX(31); 
@@ -29,6 +35,8 @@ public class ArmSubsystem extends SubsystemBase {
     private final double cruiseVelocityAccelDown = peakVelocityDown * percentOfPeakDown;
 
     public ArmSubsystem() {
+        babyNeo.restoreFactoryDefaults();
+
         armMotorMaster.configFactoryDefault();
         armMotorMaster.setSelectedSensorPosition(0);
 
@@ -76,6 +84,8 @@ public class ArmSubsystem extends SubsystemBase {
     public void dumbGoToHome(){
             if(armMotorMaster.getSelectedSensorPosition() < -8000){
                 armMotorMaster.set(0.4);
+                armMotorSlave.follow(armMotorMaster);
+                babyNeo.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 30, false);
             }
     }
 
