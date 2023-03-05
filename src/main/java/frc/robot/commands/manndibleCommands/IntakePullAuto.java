@@ -7,11 +7,12 @@ package frc.robot.commands.manndibleCommands;
 import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /** An example command that uses an example subsystem. */
 public class IntakePullAuto extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Intake m_subsystem;
+  private final Intake intake;
   private final Timer timer;
 
   /**
@@ -19,10 +20,10 @@ public class IntakePullAuto extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public IntakePullAuto(Intake subsystem) {
-    m_subsystem = subsystem;
+  public IntakePullAuto(Intake intake) {
+    addRequirements(intake);
+    this.intake = intake;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
     timer = new Timer();
   }
 
@@ -36,22 +37,25 @@ public class IntakePullAuto extends CommandBase {
   @Override
   public void execute() {
     System.out.println("This command is being run");
-    m_subsystem.intake(0.75);
+    if(timer.get()%2 == 0){
+      intake.spin(0.3);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_subsystem.intake(0);
+    intake.spin(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(timer.get() > 0.5){
-      return true;
-    } else {
+    // if(timer.get() > 0.5){
+    //   return true;
+    // } else {
+    //   return false;
+    // }
       return false;
-    }
   }
 }

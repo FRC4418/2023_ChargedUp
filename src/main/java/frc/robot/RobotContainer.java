@@ -61,6 +61,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -105,6 +106,8 @@ public class RobotContainer {
     // Configure the trigger bindings
     SmartDashboard.putData("Left Auto PID", leftPID);
     SmartDashboard.putData("Right Auto PID", rightPID);
+
+  mannArm.resetEncoder();
 
     SmartDashboard.putData(m_Chooser);
     configureDefualtCommands();
@@ -253,7 +256,9 @@ public Command getAutonomousCommand(boolean isFirstPath){
   //return m_Chooser.getSelected();
   //ParallelCommandGroup mandibleStuff = new ParallelCommandGroup(new ArmsCloseCubeAuto(mannArm), new IntakePull(intake));
   //SequentialCommandGroup armStuff = new SequentialCommandGroup(new armGoTo(arm, Constants.armPositionControl.mediumPosition), new ParallelCommandGroup(new IntakePush(intake), new ArmsOpen(mannArm)));
-  return new IntakePullAuto(intake).andThen(new armGoTo(arm, Constants.armPositionControl.highPosition)).andThen(new WaitCommand(3)).andThen(new IntakePush(intake));
+  //return new IntakePullAuto(intake).andThen(new armGoTo(arm, Constants.armPositionControl.highPosition)).andThen(new WaitCommand(3)).andThen(new IntakePush(intake));
   //return new ParallelCommandGroup(mandibleStuff, armStuff);   
+  return new ArmsCloseCone(mannArm).andThen(new ParallelRaceGroup(new armGoTo(arm, Constants.armPositionControl.highPosition), new IntakePull(intake)).andThen(new IntakePush(intake)));
+
 }
 }

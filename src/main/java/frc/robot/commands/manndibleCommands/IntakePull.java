@@ -31,13 +31,13 @@ public class IntakePull extends CommandBase {
   @Override
   public void execute() {
     System.out.println("This command is being run");
-    m_subsystem.intake(0.75);
+    m_subsystem.spin(0.75);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_subsystem.intake(0);
+    m_subsystem.spin(0);
   }
 
   // Returns true when the command should end.

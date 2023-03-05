@@ -56,7 +56,7 @@ public class ArmsCloseCone extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(arms.getPos() == -7328){
+    if(arms.getPos() == -5500){
       return true;
     } else{
       return false;

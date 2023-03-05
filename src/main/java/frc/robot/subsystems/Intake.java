@@ -18,7 +18,7 @@ public class Intake extends SubsystemBase {
     wheel2Motor.configFactoryDefault();
   }
 
-  public void intake(double speed){
+  public void spin(double speed){
     wheel1Motor.set(speed);
     wheel2Motor.set(-speed);
   }
