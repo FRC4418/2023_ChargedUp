@@ -258,7 +258,6 @@ public Command getAutonomousCommand(boolean isFirstPath){
   //SequentialCommandGroup armStuff = new SequentialCommandGroup(new armGoTo(arm, Constants.armPositionControl.mediumPosition), new ParallelCommandGroup(new IntakePush(intake), new ArmsOpen(mannArm)));
   //return new IntakePullAuto(intake).andThen(new armGoTo(arm, Constants.armPositionControl.highPosition)).andThen(new WaitCommand(3)).andThen(new IntakePush(intake));
   //return new ParallelCommandGroup(mandibleStuff, armStuff);   
-  return new ArmsCloseCone(mannArm).andThen(new ParallelRaceGroup(new armGoTo(arm, Constants.armPositionControl.highPosition), new IntakePull(intake)).andThen(new IntakePush(intake)));
-
+  return m_Chooser.getSelected();
 }
 }

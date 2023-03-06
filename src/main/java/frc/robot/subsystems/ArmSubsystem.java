@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
 public class ArmSubsystem extends SubsystemBase {
+    boolean isAtHome = false;
+
     final CANSparkMax babyNeo = new CANSparkMax(1, MotorType.kBrushless);
 
     final WPI_TalonFX armMotorMaster = new WPI_TalonFX(30);
@@ -86,6 +88,9 @@ public class ArmSubsystem extends SubsystemBase {
                 armMotorMaster.set(0.4);
                 armMotorSlave.follow(armMotorMaster);
                 babyNeo.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 30, false);
+                isAtHome = false;
+            } else {
+                isAtHome = true;
             }
     }
 
@@ -171,6 +176,10 @@ public class ArmSubsystem extends SubsystemBase {
 
         }
     
+      }
+
+      public boolean isAtHome(){
+        return isAtHome;
       }
 
       public double getMasterPos(){
