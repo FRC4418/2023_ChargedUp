@@ -53,6 +53,8 @@ public class twoPieaceAuto extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    //some of the .andThen()s are nested which might be a problem
+    //double check isFirstPath req. for the second drivePath
     new ArmsCloseCone(mandibleArms).andThen(
       new ParallelRaceGroup(
         new armGoTo(arm, Constants.armPositionControl.highPosition), 
@@ -62,7 +64,7 @@ public class twoPieaceAuto extends CommandBase {
         new armDownAuto(arm), 
         new drivePath(driveTrain, trajOut, isFirstPath, leftPID, rightPID)).andThen(
       new IntakePull(intake).andThen(
-      new drivePath(driveTrain, trajIn, false, leftPID, rightPID).andThen(
+      new drivePath(driveTrain, trajIn, true, leftPID, rightPID).andThen(
       new defaultAuto(arm, intake, mandibleArms))))));
   }
 

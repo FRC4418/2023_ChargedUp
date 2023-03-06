@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.DrivetrainDrive;
 import frc.robot.commands.autoCommands.defaultAuto;
+import frc.robot.commands.autoCommands.twoPieaceAuto;
 import frc.robot.commands.dopeSlopeCommands.armDown;
 import frc.robot.commands.dopeSlopeCommands.armStop;
 import frc.robot.commands.dopeSlopeCommands.armGoTo;
@@ -107,9 +108,15 @@ public class RobotContainer {
     SmartDashboard.putData("Left Auto PID", leftPID);
     SmartDashboard.putData("Right Auto PID", rightPID);
 
-  mannArm.resetEncoder();
+    mannArm.resetEncoder();
 
     SmartDashboard.putData(m_Chooser);
+
+    PathPlannerTrajectory driveOut = PathPlanner.loadPath("CommToMarkOut", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+    PathPlannerTrajectory driveIn = PathPlanner.loadPath("MarkToCommIn", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+    
+    m_Chooser.addOption("2 pieace", new twoPieaceAuto(arm, intake, mannArm, true, leftPID, rightPID, driveTrain, driveOut, driveIn));
+    
     configureDefualtCommands();
     configureCommnads();
     PathPlannerServer.startServer(5811);
@@ -216,39 +223,6 @@ public class RobotContainer {
     return ramseteCommand.andThen(() -> driveTrain.tankDriveVolts(0, 0));
 
   }
-
-  
-  public Command drivePath(boolean isFirstPath, String nameOfPath) {
-    // An example command will be run in autonomous
-
-    PathPlannerTrajectory drivePath1 = PathPlanner.loadPath(nameOfPath, new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
-    PathPlannerServer.sendActivePath(drivePath1.getStates());
-
-    return new SequentialCommandGroup(
-      new InstantCommand(() -> {
-        // Reset odometry for the first path you run during auto
-        if(isFirstPath){
-          Pose2d e = drivePath1.getInitialPose();  
-          //Pose2d flippedPose = new Pose2d(e.getX(),e.getY(),e.getRotation().minus(Rotation2d.fromDegrees(180)));
-          //driveTrain.resetOdometry(flippedPose);
-          driveTrain.resetOdometry(e);
-        }
-      }),
-      new PPRamseteCommand(
-          drivePath1, 
-          driveTrain::getPose, // Pose supplier
-          new RamseteController(),  
-          new SimpleMotorFeedforward(0.66871, 1.98, 0.61067),
-          driveTrain.kinematics, // DifferentialDriveKinematics
-          driveTrain::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
-          leftPID, // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-          rightPID, // Right controller (usually the same values as left controller)
-          driveTrain::tankDriveVolts, // Voltage bicnsumer
-          false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-          driveTrain // Requires this drive subsystem
-      )
-  );
-}
 
 public Command getAutonomousCommand(boolean isFirstPath){
    //return new SequentialCommandGroup(drivePath(true, "Pos3Across"), visionAlign()); 
