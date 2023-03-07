@@ -134,9 +134,8 @@ public class RobotContainer {
   }
   public void configureCommnads(){
     pit.getDPadRight().whileTrue(new resetOdometry(driveTrain, mannArm, arm));
-    
-    driver.getRightButton().whileTrue(new armsClose(mannArm));
-    driver.getLeftButton().whileTrue(new ArmsOpen(mannArm));
+    pit.getRightButton().whileTrue(new armsClose(mannArm));
+    pit.getLeftButton().whileTrue(new ArmsOpen(mannArm));
     //driver.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
     //driver.getLeftButton().whileTrue(new ArmsOpen(mannArm));
     //driver.getDPadDown().whileTrue(new dumbdArmIn(dumbArm));
@@ -151,7 +150,7 @@ public class RobotContainer {
     spotter.getBottomButton().whileTrue(new ArmsCloseCube(mannArm));
     spotter.getRightButton().whileTrue(new IntakePush(intake));
     spotter.getLeftButton().whileTrue(new IntakePull(intake));
-    spotter.getRightBumper().whileTrue(new Calibrate(mannArm));
+    //spotter.getRightBumper().whileTrue(new Calibrate(mannArm));
     //NOT FINAL VERSION OF COMMAND
   }
 
