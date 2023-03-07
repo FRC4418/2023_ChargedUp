@@ -79,8 +79,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  public final AutoGamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);
-  public final AutoGamepad spotter = new AutoGamepad(Ports.Gamepad.OPERATOR);
+  private final AutoGamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);
+  private final AutoGamepad spotter = new AutoGamepad(Ports.Gamepad.OPERATOR);
+  private final AutoGamepad pit = new AutoGamepad(Ports.Gamepad.pit);
 
   public final Arms mannArm = new Arms();
 
@@ -132,7 +133,8 @@ public class RobotContainer {
     arm.setDefaultCommand(new armStop(arm));
   }
   public void configureCommnads(){
-    driver.getDPadRight().whileTrue(new resetOdometry(driveTrain, mannArm, arm));
+    pit.getDPadRight().whileTrue(new resetOdometry(driveTrain, mannArm, arm));
+    
     driver.getRightButton().whileTrue(new armsClose(mannArm));
     driver.getLeftButton().whileTrue(new ArmsOpen(mannArm));
     //driver.getRightButton().whileTrue(new ArmsCloseCone(mannArm, 0));
