@@ -96,7 +96,6 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void slowlyGoDown() {
-        armMotorMaster.set(-Constants.armPositionControl.babyNeoSet);
         armMotorSlave.follow(armMotorMaster);
         armMotorSlave.setInverted(InvertType.OpposeMaster);
     }
