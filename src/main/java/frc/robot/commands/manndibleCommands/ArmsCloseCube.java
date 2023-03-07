@@ -4,6 +4,7 @@
 
 package frc.robot.commands.manndibleCommands;
 
+import frc.robot.constants.Constants;
 import frc.robot.subsystems.Arms;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -31,14 +32,7 @@ public class ArmsCloseCube extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled. (this requires tuning, this numebr represents the position, not speed)
   @Override
   public void execute() {
-    System.out.println(arms.getPos());
-    if(arms.getPos() < -20000){
-      arms.grab(0.2);
-    } else if(arms.getPos() > -25000){
-      arms.grab(-0.2);
-    } else{
-      arms.stop();
-    }
+    arms.setPosition(Constants.manndiblePosition.cubePos);
   }
 
   // Called once the command ends or is interrupted.
@@ -50,6 +44,10 @@ public class ArmsCloseCube extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if(arms.getPos() > Constants.manndiblePosition.cubePos+5500){
+      return true;
+    } else{
+      return false;
+    }
   }
 }

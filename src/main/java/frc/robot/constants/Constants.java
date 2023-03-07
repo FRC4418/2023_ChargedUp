@@ -61,6 +61,11 @@ public final class Constants {
     public static final double kPDriveVel = 8.5;
   }
 
+  public static final class manndiblePosition{
+    public static final double conePos = 10000;
+    public static final double cubePos = 1000;
+  }
+
   public static final class visionTrajEndPoint{
     public static final double xOffset = 0.8;
     public static final double yOffset = 0.0;
