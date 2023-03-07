@@ -32,7 +32,7 @@ public class ArmsCloseCube extends CommandBase {
   @Override
   public void execute() {
     System.out.println(arms.getPos());
-    if(arms.getPos() < -25000){
+    if(arms.getPos() < -20000){
       arms.grab(0.2);
     } else if(arms.getPos() > -25000){
       arms.grab(-0.2);

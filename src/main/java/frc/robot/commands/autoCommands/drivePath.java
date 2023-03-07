@@ -4,6 +4,7 @@
 
 package frc.robot.commands.autoCommands;
 
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.pathplanner.lib.server.PathPlannerServer;

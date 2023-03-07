@@ -69,6 +69,7 @@ public final class Constants {
   public static final class armPositionControl{
     public static final int highPosition = -276000;
     public static final int mediumPosition = -170000;
+    public static final double babyNeoSet = 0.03;
   } 
 
   public static final class AutoConstants {

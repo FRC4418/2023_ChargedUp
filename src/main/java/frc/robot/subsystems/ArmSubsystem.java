@@ -21,7 +21,6 @@ import frc.robot.constants.Constants;
 public class ArmSubsystem extends SubsystemBase {
     boolean isAtHome = false;
 
-    final CANSparkMax babyNeo = new CANSparkMax(1, MotorType.kBrushless);
 
     final WPI_TalonFX armMotorMaster = new WPI_TalonFX(30);
     final WPI_TalonFX armMotorSlave = new WPI_TalonFX(31); 
@@ -36,8 +35,10 @@ public class ArmSubsystem extends SubsystemBase {
     private final double downkF = (percentOfPeakDown * 2048) / (peakVelocityDown * percentOfPeakDown);
     private final double cruiseVelocityAccelDown = peakVelocityDown * percentOfPeakDown;
 
-    public ArmSubsystem() {
-        babyNeo.restoreFactoryDefaults();
+    private Spool spool;
+
+    public ArmSubsystem(Spool spool) {
+        this.spool = spool;
 
         armMotorMaster.configFactoryDefault();
         armMotorMaster.setSelectedSensorPosition(0);
@@ -87,7 +88,7 @@ public class ArmSubsystem extends SubsystemBase {
             if(armMotorMaster.getSelectedSensorPosition() < -8000){
                 armMotorMaster.set(0.4);
                 armMotorSlave.follow(armMotorMaster);
-                babyNeo.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 30, false);
+                spool.setNeoTo(Constants.armPositionControl.babyNeoSet);
                 isAtHome = false;
             } else {
                 isAtHome = true;
@@ -95,7 +96,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void slowlyGoDown() {
-        armMotorMaster.set( -0.4);
+        armMotorMaster.set(-Constants.armPositionControl.babyNeoSet);
         armMotorSlave.follow(armMotorMaster);
         armMotorSlave.setInverted(InvertType.OpposeMaster);
     }
@@ -136,8 +137,10 @@ public class ArmSubsystem extends SubsystemBase {
     public void setPosition(double position) {
         manageMotion(position);
         armMotorMaster.set(ControlMode.MotionMagic, position);
+        //equation for scaling: 5.625/2pi*(2+7/8+3/4*times the spool has spun around 1-4*10)/25
         armMotorSlave.follow(armMotorMaster);
         armMotorSlave.setInverted(InvertType.OpposeMaster);
+        spool.setNeoTo(-Constants.armPositionControl.babyNeoSet);
     }
 
     public Command setVoltage(float voltage) {

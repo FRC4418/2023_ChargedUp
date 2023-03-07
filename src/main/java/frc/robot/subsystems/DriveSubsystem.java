@@ -275,6 +275,10 @@ public void impulseDrive(double xSpeed, double zRotation) {
     return ahrs.getRotation2d().getDegrees()+360;
   }
 
+  public double getPitch(){
+    return ahrs.getPitch();
+  }
+
   /**
    * Returns the turn rate of the robot.
    *

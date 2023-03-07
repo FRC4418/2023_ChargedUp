@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.commands.DrivetrainDrive;
+import frc.robot.commands.autoCommands.AutoBalance;
 import frc.robot.commands.autoCommands.defaultAuto;
 import frc.robot.commands.autoCommands.twoPieaceAuto;
 import frc.robot.commands.dopeSlopeCommands.armDown;
@@ -34,6 +35,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.Arms;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Spool;
 import frc.robot.subsystems.Vision;
 
 import java.util.List;
@@ -88,7 +90,9 @@ public class RobotContainer {
   
   public final DriveSubsystem driveTrain = new DriveSubsystem(vision);
 
-  public final ArmSubsystem arm = new ArmSubsystem();
+  public final Spool spool = new Spool();
+
+  public final ArmSubsystem arm = new ArmSubsystem(spool);
 
   private PIDController leftPID = new PIDController(
     Constants.AutoPIDs.kP, 
@@ -109,14 +113,15 @@ public class RobotContainer {
     SmartDashboard.putData("Right Auto PID", rightPID);
 
     mannArm.resetEncoder();
-
     SmartDashboard.putData(m_Chooser);
 
     PathPlannerTrajectory driveOut = PathPlanner.loadPath("CommToMarkOut", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
     PathPlannerTrajectory driveIn = PathPlanner.loadPath("MarkToCommIn", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+    PathPlannerTrajectory driveToCS = PathPlanner.loadPath("CommToCS", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
     
+    m_Chooser.addOption("balance", new AutoBalance(driveTrain,driveToCS ,leftPID ,rightPID));
     m_Chooser.addOption("2 pieace", new twoPieaceAuto(arm, intake, mannArm, true, leftPID, rightPID, driveTrain, driveOut, driveIn));
-    
+
     configureDefualtCommands();
     configureCommnads();
     PathPlannerServer.startServer(5811);
@@ -224,14 +229,7 @@ public class RobotContainer {
 
   }
 
-public Command getAutonomousCommand(boolean isFirstPath){
-   //return new SequentialCommandGroup(drivePath(true, "Pos3Across"), visionAlign()); 
-   //return drivePath(isFirstPath, "markToComm").andThen(visionAlign(), null);
-  //return m_Chooser.getSelected();
-  //ParallelCommandGroup mandibleStuff = new ParallelCommandGroup(new ArmsCloseCubeAuto(mannArm), new IntakePull(intake));
-  //SequentialCommandGroup armStuff = new SequentialCommandGroup(new armGoTo(arm, Constants.armPositionControl.mediumPosition), new ParallelCommandGroup(new IntakePush(intake), new ArmsOpen(mannArm)));
-  //return new IntakePullAuto(intake).andThen(new armGoTo(arm, Constants.armPositionControl.highPosition)).andThen(new WaitCommand(3)).andThen(new IntakePush(intake));
-  //return new ParallelCommandGroup(mandibleStuff, armStuff);   
+public Command getAutonomousCommand(boolean isFirstPath) {
   return m_Chooser.getSelected();
 }
 }
