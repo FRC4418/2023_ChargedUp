@@ -114,6 +114,7 @@ public class RobotContainer {
     SmartDashboard.putData("Right Auto PID", rightPID);
 
     mannArm.resetEncoder();
+    
     SmartDashboard.putData(m_Chooser);
 
     PathPlannerTrajectory driveOut = PathPlanner.loadPath("CommToMarkOut", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
