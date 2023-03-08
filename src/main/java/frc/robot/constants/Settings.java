@@ -69,7 +69,7 @@ public interface Settings {
             public interface GearRatio {
 
                 public interface Stages {
-                    double FIRST_STAGE = (8.0 / 60.0);
+                    double FIRST_STAGE = (8.0 / 62.0);
 
                     double SECOND_STAGE = (1.0 / 1.0);
                 }
@@ -77,7 +77,7 @@ public interface Settings {
                 double ENCODER_TO_WHEEL = Stages.FIRST_STAGE * Stages.SECOND_STAGE;
             }
 
-            double WHEEL_DIAMETER = Units.inchesToMeters(4);
+            double WHEEL_DIAMETER = Units.inchesToMeters(6);
             double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
             double ENCODER_PULSES_PER_REVOLUTION = 2048;
