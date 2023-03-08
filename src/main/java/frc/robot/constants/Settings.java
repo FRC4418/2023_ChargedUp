@@ -77,7 +77,7 @@ public interface Settings {
                 double ENCODER_TO_WHEEL = Stages.FIRST_STAGE * Stages.SECOND_STAGE;
             }
 
-            double WHEEL_DIAMETER = Units.inchesToMeters(4);
+            double WHEEL_DIAMETER = Units.inchesToMeters(6);
             double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
             double ENCODER_PULSES_PER_REVOLUTION = 2048;
