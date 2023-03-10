@@ -65,7 +65,7 @@ public final class Constants {
 
   public static final class manndiblePosition{
     public static final double conePos = 12000;
-    public static final double cubePos = 3050;
+    public static final double cubePos = 3080;
     public static final double restingPos = 1200;
   }
 

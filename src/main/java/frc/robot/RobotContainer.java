@@ -26,6 +26,7 @@ import frc.robot.commands.manndibleCommands.armsClose;
 import frc.robot.commands.manndibleCommands.manndibleDefault;
 import frc.robot.commands.dopeSlopeCommands.armGoTo;
 import frc.robot.commands.dopeSlopeCommands.armHoldAt;
+import frc.robot.commands.miscCommands.doNothing;
 import frc.robot.commands.miscCommands.resetOdometry;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Ports;
@@ -126,11 +127,12 @@ public class RobotContainer {
     m_Chooser.addOption("Balance with out of comm", new AutoBalance(driveTrain, driveToCSLong, leftPID, rightPID));
     m_Chooser.addOption("balance", new AutoBalance(driveTrain,driveToCS ,leftPID ,rightPID));
     m_Chooser.addOption("2 pieace", new twoPieaceAuto(arm, intake, mannArm, true, leftPID, rightPID, driveTrain, driveOut, driveIn));
+    m_Chooser.addOption("score pre-loaded", new defaultAuto(arm, intake, mannArm));
 
     configureDefualtCommands();
     configureCommnads();
     PathPlannerServer.startServer(5811);
-    m_Chooser.setDefaultOption("Default", new defaultAuto(arm, intake, mannArm));
+    m_Chooser.setDefaultOption("DO NOTHINGS", new doNothing());
   }
   public void configureDefualtCommands(){
     driveTrain.setDefaultCommand(new DrivetrainDrive(driveTrain, driver));
