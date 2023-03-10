@@ -7,16 +7,19 @@ package frc.robot.commands.dopeSlopeCommands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.Spool;
 
 public class armHoldAt extends CommandBase {
   /** Creates a new armUp. */
   private ArmSubsystem arm;
   private double pos;
-  public armHoldAt(ArmSubsystem arm, double armPos) {
+  private Spool spool;
+  public armHoldAt(ArmSubsystem arm, double armPos, Spool spool) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(arm);
     this.arm= arm;
     this.pos = armPos;
+    this.spool = spool;
   }
 
   // Called when the command is initially scheduled.
@@ -29,6 +32,7 @@ public class armHoldAt extends CommandBase {
     //dumbArm.inverseSet();
     System.out.println(arm.getMasterPos());
     arm.setPosition(pos);
+    spool.setNeoTo(-0.01);
   }
 
   // Called once the command ends or is interrupted.

@@ -148,10 +148,10 @@ public class RobotContainer {
     //driver.getDPadDown().whileTrue(new dumbdArmIn(dumbArm));
 
     //spotter controller arm
-    spotter.getDPadUp().onTrue(new armHoldAt(arm, -276000));
-    spotter.getDPadLeft().onTrue(new armHoldAt(arm, -170000));
+    spotter.getDPadUp().onTrue(new armHoldAt(arm, -270000, spool));
+    spotter.getDPadLeft().onTrue(new armHoldAt(arm, -200000, spool));
     //low position is -140000 if needed.
-    spotter.getDPadDown().whileTrue(new armDown(arm));
+    spotter.getDPadDown().whileTrue(new armDown(arm, spool));
     //spotter manndible
     spotter.getTopButton().whileTrue(new ArmsCloseCone(mannArm));
     spotter.getBottomButton().whileTrue(new ArmsCloseCube(mannArm));
