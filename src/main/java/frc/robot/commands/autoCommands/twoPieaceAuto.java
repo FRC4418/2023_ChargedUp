@@ -58,12 +58,12 @@ public class twoPieaceAuto extends CommandBase {
     new ArmsCloseCone(mandibleArms).andThen(
       new ParallelRaceGroup(
         new armGoTo(arm, Constants.armPositionControl.highPosition), 
-        new IntakePull(intake)).andThen(
+        new IntakePull(intake, mandibleArms)).andThen(
       new IntakePush(intake)).andThen(
       new ParallelCommandGroup(
         new armDownAuto(arm), 
         new drivePath(driveTrain, trajOut, isFirstPath, leftPID, rightPID)).andThen(
-      new IntakePull(intake).andThen(
+      new IntakePull(intake, mandibleArms).andThen(
       new drivePath(driveTrain, trajIn, true, leftPID, rightPID).andThen(
       new defaultAuto(arm, intake, mandibleArms))))));
   }

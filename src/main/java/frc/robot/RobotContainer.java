@@ -23,6 +23,7 @@ import frc.robot.commands.manndibleCommands.IntakePull;
 import frc.robot.commands.manndibleCommands.IntakePullAuto;
 import frc.robot.commands.manndibleCommands.IntakePush;
 import frc.robot.commands.manndibleCommands.armsClose;
+import frc.robot.commands.manndibleCommands.manndibleDefault;
 import frc.robot.commands.dopeSlopeCommands.armGoTo;
 import frc.robot.commands.dopeSlopeCommands.armHoldAt;
 import frc.robot.commands.miscCommands.resetOdometry;
@@ -120,7 +121,9 @@ public class RobotContainer {
     PathPlannerTrajectory driveOut = PathPlanner.loadPath("CommToMarkOut", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
     PathPlannerTrajectory driveIn = PathPlanner.loadPath("MarkToCommIn", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
     PathPlannerTrajectory driveToCS = PathPlanner.loadPath("CommToCS", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+    PathPlannerTrajectory driveToCSLong = PathPlanner.loadPath("CommToCSLong", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
     
+    m_Chooser.addOption("Balance with out of comm", new AutoBalance(driveTrain, driveToCSLong, leftPID, rightPID));
     m_Chooser.addOption("balance", new AutoBalance(driveTrain,driveToCS ,leftPID ,rightPID));
     m_Chooser.addOption("2 pieace", new twoPieaceAuto(arm, intake, mannArm, true, leftPID, rightPID, driveTrain, driveOut, driveIn));
 
@@ -132,6 +135,7 @@ public class RobotContainer {
   public void configureDefualtCommands(){
     driveTrain.setDefaultCommand(new DrivetrainDrive(driveTrain, driver));
     arm.setDefaultCommand(new armStop(arm));
+    mannArm.setDefaultCommand(new manndibleDefault(mannArm));
   }
   public void configureCommnads(){
     pit.getDPadRight().whileTrue(new resetOdometry(driveTrain, mannArm, arm));
@@ -150,7 +154,7 @@ public class RobotContainer {
     spotter.getTopButton().whileTrue(new ArmsCloseCone(mannArm));
     spotter.getBottomButton().whileTrue(new ArmsCloseCube(mannArm));
     spotter.getRightButton().whileTrue(new IntakePush(intake));
-    spotter.getLeftButton().whileTrue(new IntakePull(intake));
+    spotter.getLeftButton().whileTrue(new IntakePull(intake, mannArm));  
     //spotter.getRightBumper().whileTrue(new Calibrate(mannArm));
     //NOT FINAL VERSION OF COMMAND
   }

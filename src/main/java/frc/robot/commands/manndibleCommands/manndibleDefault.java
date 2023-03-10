@@ -4,62 +4,51 @@
 
 package frc.robot.commands.manndibleCommands;
 
-import frc.robot.subsystems.Intake;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.constants.Constants;
 import frc.robot.subsystems.Arms;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class IntakePullAuto extends CommandBase {
+public class manndibleDefault extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Intake intake;
-  private final Timer timer;
   private final Arms arms;
+  double position;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public IntakePullAuto(Intake intake, Arms arms) {
-    addRequirements(intake);
-    this.intake = intake;
-    // Use addRequirements() here to declare subsystem dependencies.
-    timer = new Timer();
+  public manndibleDefault(Arms arms) {
     this.arms = arms;
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(arms);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    timer.start();
-  }
+  public void initialize() {}
 
-  // Called every time the scheduler runs while the command is scheduled.
+  // Called every time the scheduler runs while the command is scheduled. (this requires tuning, this numebr represents the position, not speed)
   @Override
   public void execute() {
-    System.out.println("This command is being run");
-    if(timer.get()%2 == 0){
-      intake.spin(0.3);
-      arms.grab(0.2);
-    }
+    arms.setPosition(Constants.manndiblePosition.restingPos);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.spin(0);
+    arms.grab(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // if(timer.get() > 0.5){
+    // if(arms.getPos() > Constants.manndiblePosition.cubePos){
     //   return true;
-    // } else {
+    // } else{
     //   return false;
     // }
-      return false;
+  return false;
   }
 }

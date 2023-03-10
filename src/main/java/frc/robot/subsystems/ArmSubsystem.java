@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -88,7 +89,7 @@ public class ArmSubsystem extends SubsystemBase {
             if(armMotorMaster.getSelectedSensorPosition() < -8000){
                 armMotorMaster.set(0.4);
                 armMotorSlave.follow(armMotorMaster);
-                spool.setNeoTo(Constants.armPositionControl.babyNeoSet);
+                spool.setNeoTo(armMotorMaster.getMotorOutputPercent()*Constants.armPositionControl.babyNeoSet);
                 isAtHome = false;
             } else {
                 isAtHome = true;
@@ -139,7 +140,7 @@ public class ArmSubsystem extends SubsystemBase {
         //equation for scaling: 5.625/2pi*(2+7/8+3/4*times the spool has spun around 1-4*10)/25
         armMotorSlave.follow(armMotorMaster);
         armMotorSlave.setInverted(InvertType.OpposeMaster);
-        spool.setNeoTo(-Constants.armPositionControl.babyNeoSet);
+        spool.setNeoTo(-armMotorMaster.getMotorOutputPercent()*Constants.armPositionControl.babyNeoSet);
     }
 
     public Command setVoltage(float voltage) {

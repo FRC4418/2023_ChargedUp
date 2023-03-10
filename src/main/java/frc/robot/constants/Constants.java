@@ -11,6 +11,8 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
+import java.util.function.DoubleFunction;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -62,8 +64,9 @@ public final class Constants {
   }
 
   public static final class manndiblePosition{
-    public static final double conePos = 10000;
-    public static final double cubePos = 1000;
+    public static final double conePos = 12000;
+    public static final double cubePos = 3050;
+    public static final double restingPos = 1200;
   }
 
   public static final class visionTrajEndPoint{
@@ -72,9 +75,10 @@ public final class Constants {
   }
 
   public static final class armPositionControl{
-    public static final int highPosition = -276000;
+    public static final int highPosition = -250000;
     public static final int mediumPosition = -170000;
-    public static final double babyNeoSet = 0.03;
+    //public static final double babyNeoSet = 0.03;
+    public static final double babyNeoSet = 0.102;
   } 
 
   public static final class AutoConstants {

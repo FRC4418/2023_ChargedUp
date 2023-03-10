@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.dopeSlopeCommands.armGoTo;
 import frc.robot.commands.manndibleCommands.ArmsCloseCone;
 import frc.robot.commands.manndibleCommands.IntakePull;
+import frc.robot.commands.manndibleCommands.IntakePullAuto;
 import frc.robot.commands.manndibleCommands.IntakePush;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.ArmSubsystem;
@@ -38,7 +39,7 @@ public class defaultAuto extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    new ArmsCloseCone(mandibleArms).andThen(new ParallelRaceGroup(new armGoTo(arm, Constants.armPositionControl.highPosition), new IntakePull(intake)).andThen(new IntakePush(intake)));
+    new ArmsCloseCone(mandibleArms).andThen(new ParallelRaceGroup(new armGoTo(arm, Constants.armPositionControl.highPosition), new IntakePullAuto(intake, mandibleArms)).andThen(new IntakePush(intake)));
   }
 
   // Called once the command ends or is interrupted.

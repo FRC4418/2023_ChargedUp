@@ -6,20 +6,22 @@ package frc.robot.commands.autoCommands;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.constants.Ports.Drivetrain;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class AutoBalance extends CommandBase {
+public class AutoBalanceLong extends CommandBase {
   /** Creates a new AutoBalance. */
   private DriveSubsystem driveTrain;
   private PathPlannerTrajectory traj;
   private PIDController leftPID;
   private PIDController rightPID;
-  public AutoBalance(DriveSubsystem driveTrain, PathPlannerTrajectory traj, PIDController leftPID, PIDController rightPID) {
+  public AutoBalanceLong(DriveSubsystem driveTrain, PathPlannerTrajectory traj, PIDController leftPID, PIDController rightPID) {
     // Use addRequirements() here to declare subsystem dependencies.
+    //addRequirements(driveTrain, traj, leftPID, rightPID);
+    
   }
 
   // Called when the command is initially scheduled.
@@ -29,7 +31,6 @@ public class AutoBalance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //PathPlannerServer.sendActivePath(traj.getStates());
     new drivePath(driveTrain, traj, true, leftPID, rightPID).andThen(
       new balanceCommand(driveTrain));
   }

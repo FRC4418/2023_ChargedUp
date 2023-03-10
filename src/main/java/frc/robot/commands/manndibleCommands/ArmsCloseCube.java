@@ -44,10 +44,11 @@ public class ArmsCloseCube extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(arms.getPos() > Constants.manndiblePosition.cubePos+5500){
-      return true;
-    } else{
-      return false;
-    }
+    // if(arms.getPos() > Constants.manndiblePosition.cubePos){
+    //   return true;
+    // } else{
+    //   return false;
+    // }
+  return false;
   }
 }

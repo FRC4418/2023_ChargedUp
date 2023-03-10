@@ -36,12 +36,12 @@ public class Arms extends SubsystemBase {
     armsMotor.setNeutralMode(NeutralMode.Brake);
 
     armsMotor.config_kF(0, 0.1, 0);
-		armsMotor.config_kP(0, 0.06030624264, 0);
+		armsMotor.config_kP(0, 0.09030624264, 0);
 		armsMotor.config_kI(0, 0, 0);
 		armsMotor.config_kD(0, 0, 0);
 
     armsMotor.config_kF(1, 0.1, 0);
-		armsMotor.config_kP(1, 0.1265760198, 0);
+		armsMotor.config_kP(1, 0.0965760198, 0);
 		armsMotor.config_kI(1, 0, 0);
 		armsMotor.config_kD(1, 0, 0);
 

@@ -3,8 +3,8 @@ package frc.robot.constants;
 public interface Ports {
 
     public interface Gamepad{
-        int DRIVER = 0;
-        int OPERATOR = 1;
+        int DRIVER = 1;
+        int OPERATOR = 0;
         int pit = 2;
     }
 
