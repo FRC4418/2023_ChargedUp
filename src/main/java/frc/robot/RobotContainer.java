@@ -6,9 +6,12 @@ package frc.robot;
 
 import frc.robot.commands.DrivetrainDrive;
 import frc.robot.commands.autoCommands.AutoBalance;
+import frc.robot.commands.autoCommands.balanceCommand;
 import frc.robot.commands.autoCommands.defaultAuto;
+import frc.robot.commands.autoCommands.drivePath;
 import frc.robot.commands.autoCommands.twoPieaceAuto;
 import frc.robot.commands.dopeSlopeCommands.armDown;
+import frc.robot.commands.dopeSlopeCommands.armDownAuto;
 import frc.robot.commands.dopeSlopeCommands.armStop;
 import frc.robot.commands.dopeSlopeCommands.armGoTo;
 import frc.robot.commands.dopeSlopeCommands.armHoldAt;
@@ -22,6 +25,7 @@ import frc.robot.commands.manndibleCommands.Calibrate;
 import frc.robot.commands.manndibleCommands.IntakePull;
 import frc.robot.commands.manndibleCommands.IntakePullAuto;
 import frc.robot.commands.manndibleCommands.IntakePush;
+import frc.robot.commands.manndibleCommands.IntakePushAuto;
 import frc.robot.commands.manndibleCommands.armsClose;
 import frc.robot.commands.manndibleCommands.manndibleDefault;
 import frc.robot.commands.dopeSlopeCommands.armGoTo;
@@ -61,6 +65,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -85,7 +90,11 @@ public class RobotContainer {
   private final AutoGamepad spotter = new AutoGamepad(Ports.Gamepad.OPERATOR);
   private final AutoGamepad pit = new AutoGamepad(Ports.Gamepad.pit);
 
+  private final PathPlannerTrajectory traj;
+
   public final Arms mannArm = new Arms();
+
+  private final Timer timer = new Timer();
 
   public final Intake intake = new Intake();
   
@@ -114,6 +123,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     SmartDashboard.putData("Left Auto PID", leftPID);
     SmartDashboard.putData("Right Auto PID", rightPID);
+    
 
     mannArm.resetEncoder();
     
@@ -121,18 +131,21 @@ public class RobotContainer {
 
     PathPlannerTrajectory driveOut = PathPlanner.loadPath("CommToMarkOut", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
     PathPlannerTrajectory driveIn = PathPlanner.loadPath("MarkToCommIn", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
-    PathPlannerTrajectory driveToCS = PathPlanner.loadPath("CommToCS", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+    //dynamic
+    traj = PathPlanner.loadPath("Out", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
     PathPlannerTrajectory driveToCSLong = PathPlanner.loadPath("CommToCSLong", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
     
+
+    m_Chooser.addOption("balance", new AutoBalance(driveTrain,traj ,leftPID ,rightPID));
     m_Chooser.addOption("Balance with out of comm", new AutoBalance(driveTrain, driveToCSLong, leftPID, rightPID));
-    m_Chooser.addOption("balance", new AutoBalance(driveTrain,driveToCS ,leftPID ,rightPID));
-    m_Chooser.addOption("2 pieace", new twoPieaceAuto(arm, intake, mannArm, true, leftPID, rightPID, driveTrain, driveOut, driveIn));
-    m_Chooser.addOption("score pre-loaded", new defaultAuto(arm, intake, mannArm));
+    m_Chooser.addOption("2 pieace", new twoPieaceAuto(arm, intake, mannArm, true, leftPID, rightPID, driveTrain, driveOut, driveIn, spool));
+    m_Chooser.addOption("score pre-loaded", new defaultAuto(arm, intake, mannArm, spool));
+   // m_Chooser.addOption("driveOut");
 
     configureDefualtCommands();
     configureCommnads();
     PathPlannerServer.startServer(5811);
-    m_Chooser.setDefaultOption("DO NOTHINGS", new doNothing());
+    m_Chooser.setDefaultOption("DO NOTHING", new doNothing());
   }
   public void configureDefualtCommands(){
     driveTrain.setDefaultCommand(new DrivetrainDrive(driveTrain, driver));
@@ -148,10 +161,12 @@ public class RobotContainer {
     //driver.getDPadDown().whileTrue(new dumbdArmIn(dumbArm));
 
     //spotter controller arm
-    spotter.getDPadUp().onTrue(new armHoldAt(arm, -270000, spool));
-    spotter.getDPadLeft().onTrue(new armHoldAt(arm, -200000, spool));
+    driver.getDPadUp().onTrue(new armHoldAt(arm, -270000, spool));
+    //driver.getDPadUp().whileTrue(new armGoTo(arm, 0));
+    driver.getDPadLeft().onTrue(new armHoldAt(arm, -200000, spool));
+    driver.getDPadDown().onTrue(new armHoldAt(arm, -100000, spool));
     //low position is -140000 if needed.
-    spotter.getDPadDown().whileTrue(new armDown(arm, spool));
+    driver.getDPadDown().whileTrue(new armDown(arm, spool));
     //spotter manndible
     spotter.getTopButton().whileTrue(new ArmsCloseCone(mannArm));
     spotter.getBottomButton().whileTrue(new ArmsCloseCube(mannArm));
@@ -238,6 +253,68 @@ public class RobotContainer {
   }
 
 public Command getAutonomousCommand(boolean isFirstPath) {
-  return m_Chooser.getSelected();
+  //DRIVE OUT OF COMM
+  //PathPlannerServer.sendActivePath(traj.getStates());
+  //return m_Chooser.getSelected();
+  return new SequentialCommandGroup( new ArmsCloseCubeAuto(mannArm),new ParallelRaceGroup(new armHoldAt(arm, -270000, spool), new IntakePull(intake, mannArm)), new WaitCommand(0.5), new IntakePushAuto(intake), new armDownAuto(arm, spool),  new SequentialCommandGroup(
+    new InstantCommand(() -> {
+      // Reset odometry for the first path you run during auto
+      timer.start();
+      if(isFirstPath){
+        Pose2d e = traj.getInitialPose();  
+        //Pose2d flippedPose = new Pose2d(e.getX(),e.getY(),e.getRotation().minus(Rotation2d.fromDegrees(180)));
+        //driveTrain.resetOdometry(flippedPose);
+        driveTrain.resetOdometry(e);
+      }
+    }),
+    new PPRamseteCommand(
+        traj, 
+        driveTrain::getPose, // Pose supplier
+        new RamseteController(),  
+        new SimpleMotorFeedforward(0.66871, 1.98, 0.61067),
+        driveTrain.kinematics, // DifferentialDriveKinematics
+        driveTrain::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
+        leftPID, // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+        rightPID, // Right controller (usually the same values as left controller)
+        driveTrain::tankDriveVolts, // Voltage bicnsumer
+        false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+        driveTrain // Requires this drive subsystem
+    )
+));
+  //, new armDownAuto(arm, spool), new drivePath(driveTrain, traj, isFirstPath, leftPID, rightPID)
+  //, new armDown(arm, spool), new drivePath(driveTrain, traj, isFirstPath, leftPID, rightPID)
+  //return new ParallelRaceGroup(new armHoldAt(arm, Constants.armPositionControl.highPosition, spool).andThen(new IntakePush(intake), new IntakePullAuto(intake, mannArm)));
+  //return m_Chooser.getSelected();
+  //  return new SequentialCommandGroup(
+  //     new InstantCommand(() -> {
+  //       // Reset odometry for the first path you run during auto
+  //       timer.start();
+  //       if(isFirstPath){
+  //         Pose2d e = traj.getInitialPose();  
+  //         //Pose2d flippedPose = new Pose2d(e.getX(),e.getY(),e.getRotation().minus(Rotation2d.fromDegrees(180)));
+  //         //driveTrain.resetOdometry(flippedPose);
+  //         driveTrain.resetOdometry(e);
+  //       }
+  //     }),
+  //     new PPRamseteCommand(
+  //         traj, 
+  //         driveTrain::getPose, // Pose supplier
+  //         new RamseteController(),  
+  //         new SimpleMotorFeedforward(0.66871, 1.98, 0.61067),
+  //         driveTrain.kinematics, // DifferentialDriveKinematics
+  //         driveTrain::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
+  //         leftPID, // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+  //         rightPID, // Right controller (usually the same values as left controller)
+  //         driveTrain::tankDriveVolts, // Voltage bicnsumer
+  //         false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+  //         driveTrain // Requires this drive subsystem
+  //     )
+  // );
+  //return m_Chooser.getSelected();
+  //return new drivePath(driveTrain, traj, isFirstPath, leftPID, rightPID);
+
+    //BALANCE OUT
+
+
 }
 }

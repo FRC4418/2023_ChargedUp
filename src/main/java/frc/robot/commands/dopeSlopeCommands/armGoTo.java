@@ -28,7 +28,8 @@ public class armGoTo extends CommandBase {
   public void execute() {
     //dumbArm.inverseSet();
     System.out.println(arm.getMasterPos());
-    arm.setPosition(pos);
+    arm.slowyGoUp();
+    //arm.setPosition(pos);
   }
 
   // Called once the command ends or is interrupted.

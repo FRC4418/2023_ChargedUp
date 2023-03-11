@@ -43,7 +43,6 @@ public class drivePath extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    PathPlannerServer.sendActivePath(drivePath1.getStates());
 
     new SequentialCommandGroup(
       new InstantCommand(() -> {
@@ -81,6 +80,7 @@ public class drivePath extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timer.hasElapsed(drivePath1.getTotalTimeSeconds());
+    //return timer.hasElapsed(drivePath1.getTotalTimeSeconds());
+    return false;
   }
 }

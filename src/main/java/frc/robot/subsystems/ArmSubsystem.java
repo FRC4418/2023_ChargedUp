@@ -26,12 +26,13 @@ public class ArmSubsystem extends SubsystemBase {
     final WPI_TalonFX armMotorMaster = new WPI_TalonFX(30);
     final WPI_TalonFX armMotorSlave = new WPI_TalonFX(31); 
 
-    private int peakVelocityUp = 273600;
-    private final double percentOfPeakUp = .75;
-    private final double upkF = (percentOfPeakUp * 2048) / (peakVelocityUp * percentOfPeakUp);
-    private final double cruiseVelocityAccelUp = peakVelocityUp * percentOfPeakUp;
+    //private int peakVelocityUp = 1;
+    private final double percentOfPeakUp = 10000;
+    //private final double upkF = (percentOfPeakUp * 2048) / (peakVelocityUp * percentOfPeakUp);
+    private final double upkF = 2048;
+    private final double cruiseVelocityAccelUp = percentOfPeakUp;
 
-    private int peakVelocityDown = 3090;
+    private int peakVelocityDown = 30900;
     private final double percentOfPeakDown = .35;
     private final double downkF = (percentOfPeakDown * 2048) / (peakVelocityDown * percentOfPeakDown);
     private final double cruiseVelocityAccelDown = peakVelocityDown * percentOfPeakDown;
@@ -45,12 +46,12 @@ public class ArmSubsystem extends SubsystemBase {
         armMotorMaster.setSelectedSensorPosition(0);
 
 		armMotorMaster.config_kF(0, 0.1, 0);
-		armMotorMaster.config_kP(0, 0.06030624264, 0);
+		armMotorMaster.config_kP(0, 0);
 		armMotorMaster.config_kI(0, 0, 0);
 		armMotorMaster.config_kD(0, 0, 0);
 
         armMotorMaster.config_kF(1, 0.1, 0);
-		armMotorMaster.config_kP(1, 0.1265760198, 0);
+		armMotorMaster.config_kP(1, 0.130624264, 0);
 		armMotorMaster.config_kI(1, 0, 0);
 		armMotorMaster.config_kD(1, 0, 0);
 
@@ -86,7 +87,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void dumbGoToHome(){
-            if(armMotorMaster.getSelectedSensorPosition() < -8000){
+            if(armMotorMaster.getSelectedSensorPosition() < -7000){
                 armMotorMaster.set(0.4);
                 armMotorSlave.follow(armMotorMaster);
                 spool.setNeoTo(armMotorMaster.getMotorOutputPercent()*Constants.armPositionControl.babyNeoSet);
@@ -101,14 +102,10 @@ public class ArmSubsystem extends SubsystemBase {
         armMotorSlave.setInverted(InvertType.OpposeMaster);
     }
 
-    public Command slowyGoUp() {
-        return runOnce(
-            () -> {
-                armMotorMaster.set(TalonFXControlMode.PercentOutput, .1);
+    public void slowyGoUp() {
+                armMotorMaster.set(TalonFXControlMode.PercentOutput, -0.7);
                 armMotorSlave.follow(armMotorMaster);
                 armMotorSlave.setInverted(InvertType.OpposeMaster);
-            }
-        );
     }
 
     public void stop(){

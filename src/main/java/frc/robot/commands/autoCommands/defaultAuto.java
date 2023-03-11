@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.dopeSlopeCommands.armGoTo;
+import frc.robot.commands.dopeSlopeCommands.armHoldAt;
 import frc.robot.commands.manndibleCommands.ArmsCloseCone;
 import frc.robot.commands.manndibleCommands.IntakePull;
 import frc.robot.commands.manndibleCommands.IntakePullAuto;
@@ -18,18 +19,21 @@ import frc.robot.constants.Constants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.Arms;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Spool;
 
 public class defaultAuto extends CommandBase {
   /** Creates a new defaultAuto. */
   private ArmSubsystem arm;
   private Intake intake;
   private Arms mandibleArms;
-  public defaultAuto(ArmSubsystem arm, Intake intake, Arms mandibleArms) {
+  private Spool spool;
+  public defaultAuto(ArmSubsystem arm, Intake intake, Arms mandibleArms, Spool spool) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(arm, intake, mandibleArms);
+    addRequirements(arm, intake, mandibleArms, spool);
     this.arm = arm;
     this.intake = intake;
     this.mandibleArms = mandibleArms;
+    this.spool = spool;
   }
 
   // Called when the command is initially scheduled.
@@ -39,7 +43,7 @@ public class defaultAuto extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    new ArmsCloseCone(mandibleArms).andThen(new ParallelRaceGroup(new armGoTo(arm, Constants.armPositionControl.highPosition), new IntakePullAuto(intake, mandibleArms)).andThen(new IntakePush(intake)));
+    new ParallelRaceGroup(new armHoldAt(arm, Constants.armPositionControl.highPosition, spool).andThen(new ArmsCloseCone(mandibleArms)), new IntakePullAuto(intake, mandibleArms)).andThen(new IntakePush(intake));
   }
 
   // Called once the command ends or is interrupted.

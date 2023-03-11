@@ -20,6 +20,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.Arms;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Spool;
 
 public class twoPieaceAuto extends CommandBase {
   /** Creates a new twoPieaceAuto. */
@@ -32,7 +33,9 @@ public class twoPieaceAuto extends CommandBase {
   private boolean isFirstPath;
   private PathPlannerTrajectory trajOut;
   private PathPlannerTrajectory trajIn;
-  public twoPieaceAuto(ArmSubsystem arm, Intake intake, Arms mandibleArms, boolean isFirstPath, PIDController leftPid, PIDController rightPID, DriveSubsystem driveTrain, PathPlannerTrajectory trajOut, PathPlannerTrajectory trajIn) {
+  private Spool spool;
+
+  public twoPieaceAuto(ArmSubsystem arm, Intake intake, Arms mandibleArms, boolean isFirstPath, PIDController leftPid, PIDController rightPID, DriveSubsystem driveTrain, PathPlannerTrajectory trajOut, PathPlannerTrajectory trajIn, Spool spool) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(arm, intake, mandibleArms, driveTrain);
     this.arm = arm;
@@ -44,6 +47,7 @@ public class twoPieaceAuto extends CommandBase {
     this.isFirstPath = isFirstPath;
     this.trajOut = trajOut;
     this.trajIn = trajIn;
+    this.spool = spool;
   }
 
   // Called when the command is initially scheduled.
@@ -61,11 +65,11 @@ public class twoPieaceAuto extends CommandBase {
         new IntakePull(intake, mandibleArms)).andThen(
       new IntakePush(intake)).andThen(
       new ParallelCommandGroup(
-        new armDownAuto(arm), 
+        new armDownAuto(arm, spool), 
         new drivePath(driveTrain, trajOut, isFirstPath, leftPID, rightPID)).andThen(
       new IntakePull(intake, mandibleArms).andThen(
       new drivePath(driveTrain, trajIn, true, leftPID, rightPID).andThen(
-      new defaultAuto(arm, intake, mandibleArms))))));
+      new defaultAuto(arm, intake, mandibleArms, spool))))));
   }
 
   // Called once the command ends or is interrupted.

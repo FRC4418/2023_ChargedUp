@@ -32,7 +32,7 @@ public class armHoldAt extends CommandBase {
     //dumbArm.inverseSet();
     System.out.println(arm.getMasterPos());
     arm.setPosition(pos);
-    spool.setNeoTo(-0.01);
+    spool.setNeoTo(-0.04);
   }
 
   // Called once the command ends or is interrupted.
@@ -43,11 +43,11 @@ public class armHoldAt extends CommandBase {
   @Override
   public boolean isFinished() {
     //EXPERIMENTAL SECTION
-    // if(arm.getMasterPos() > pos+10000){
-    //   return false;
-    // }else{
-    //   return true;
-    // }
-    return false;
+    if(arm.getMasterPos() > pos+1000){
+      return false;
+    }else{
+      return true;
+    }
+    //return false;
   }
 }

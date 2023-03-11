@@ -17,7 +17,8 @@ public class IntakePush extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public IntakePush(Intake subsystem) {
+  public 
+  IntakePush(Intake subsystem) {
     m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
   }

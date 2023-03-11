@@ -36,9 +36,9 @@ public class Arm extends SubsystemBase {
   private TrapezoidProfile.Constraints m_Constraints = 
     new TrapezoidProfile.Constraints(0.5,0.3);
   private TrapezoidProfile profile;
-  private static final double maxVel = 10;
-  private static final double maxAccel = 10;
-  private static final int kTimeOut = 30;
+  private static final double maxVel = 1500;
+  private static final double maxAccel = 200;
+  private static final int kTimeOut = 3000;
   
   
 

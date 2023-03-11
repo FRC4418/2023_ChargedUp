@@ -7,14 +7,17 @@ package frc.robot.commands.dopeSlopeCommands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.Spool;
 
 public class armDownAuto extends CommandBase {
   /** Creates a new armDown. */
   private ArmSubsystem arm;
-  public armDownAuto(ArmSubsystem arm) {
+  private Spool spool;
+  public armDownAuto(ArmSubsystem arm, Spool spool) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(arm);
+    addRequirements(arm, spool);
     this.arm = arm;
+    this.spool = spool;
   }
 
   // Called when the command is initially scheduled.
@@ -26,19 +29,22 @@ public class armDownAuto extends CommandBase {
   public void execute() {
     //arm.goToHome();
     arm.dumbGoToHome();
+    spool.setNeoTo(0.09);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    arm.stop();
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(arm.isAtHome()){
-      return true;
-    } else {
+    if(arm.getMasterPos() < -10000){
       return false;
+    } else {
+      return true;
     }
   }
 }

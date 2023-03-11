@@ -19,7 +19,13 @@ public class AutoBalance extends CommandBase {
   private PIDController leftPID;
   private PIDController rightPID;
   public AutoBalance(DriveSubsystem driveTrain, PathPlannerTrajectory traj, PIDController leftPID, PIDController rightPID) {
-    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(driveTrain);
+    this.driveTrain = driveTrain;
+    this.traj = traj;
+    this.leftPID = leftPID;
+    this.rightPID = rightPID;
+    // Use addRequirements() here to declare subsystem dependen
+    
   }
 
   // Called when the command is initially scheduled.

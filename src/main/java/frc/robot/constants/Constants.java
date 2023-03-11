@@ -64,9 +64,10 @@ public final class Constants {
   }
 
   public static final class manndiblePosition{
-    public static final double conePos = 12000;
-    public static final double cubePos = 3080;
-    public static final double restingPos = 1200;
+    public static final double conePos = 15000;
+    public static final double cubePos = 5500;
+    public static final double restingPos = 2000;
+
   }
 
   public static final class visionTrajEndPoint{
@@ -76,14 +77,14 @@ public final class Constants {
 
   public static final class armPositionControl{
     public static final int highPosition = -250000;
-    public static final int mediumPosition = -170000;
+    public static final int mediumPosition = -180000;
     //public static final double babyNeoSet = 0.03;
     public static final double babyNeoSet = 0.102;
   } 
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 0.3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 0.1;
+    public static final double kMaxSpeedMetersPerSecond = 0.6;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 0.2;
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
     public static final double kRamseteB = 2;
