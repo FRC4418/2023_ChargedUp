@@ -66,9 +66,11 @@ public final class Constants {
     public static final double yOffset = 0.0;
   }
 
-  public static final class armPositionControl{
-    public static final int highPosition = -276000;
-    public static final int mediumPosition = -170000;
+  public static final class intakePositionControl{
+    public static final int downPos = -1000;
+    public static final int farBackPos = 1000;
+    public static final double pullSpeed = 0.5;
+    public static final double pushSpeed = -0.5;
   } 
 
   public static final class AutoConstants {

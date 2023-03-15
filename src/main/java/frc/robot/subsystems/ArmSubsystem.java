@@ -21,10 +21,8 @@ import frc.robot.constants.Constants;
 public class ArmSubsystem extends SubsystemBase {
     boolean isAtHome = false;
 
-    final CANSparkMax babyNeo = new CANSparkMax(1, MotorType.kBrushless);
-
-    final WPI_TalonFX armMotorMaster = new WPI_TalonFX(30);
-    final WPI_TalonFX armMotorSlave = new WPI_TalonFX(31); 
+    final WPI_TalonFX intakeMaster = new WPI_TalonFX(30);
+    final WPI_TalonFX intakeSlave = new WPI_TalonFX(31); 
 
     private int peakVelocityUp = 273600;
     private final double percentOfPeakUp = .75;
@@ -37,37 +35,35 @@ public class ArmSubsystem extends SubsystemBase {
     private final double cruiseVelocityAccelDown = peakVelocityDown * percentOfPeakDown;
 
     public ArmSubsystem() {
-        babyNeo.restoreFactoryDefaults();
+        intakeMaster.configFactoryDefault();
+        intakeMaster.setSelectedSensorPosition(0);
 
-        armMotorMaster.configFactoryDefault();
-        armMotorMaster.setSelectedSensorPosition(0);
+		intakeMaster.config_kF(0, 0.1, 0);
+		intakeMaster.config_kP(0, 0.06030624264, 0);
+		intakeMaster.config_kI(0, 0, 0);
+		intakeMaster.config_kD(0, 0, 0);
 
-		armMotorMaster.config_kF(0, 0.1, 0);
-		armMotorMaster.config_kP(0, 0.06030624264, 0);
-		armMotorMaster.config_kI(0, 0, 0);
-		armMotorMaster.config_kD(0, 0, 0);
+        intakeMaster.config_kF(1, 0.1, 0);
+		intakeMaster.config_kP(1, 0.1265760198, 0);
+		intakeMaster.config_kI(1, 0, 0);
+		intakeMaster.config_kD(1, 0, 0);
 
-        armMotorMaster.config_kF(1, 0.1, 0);
-		armMotorMaster.config_kP(1, 0.1265760198, 0);
-		armMotorMaster.config_kI(1, 0, 0);
-		armMotorMaster.config_kD(1, 0, 0);
+        intakeMaster.configMotionSCurveStrength(2);
 
-        armMotorMaster.configMotionSCurveStrength(2);
+        intakeMaster.setInverted(true);
+        intakeMaster.setNeutralMode(NeutralMode.Brake);
+        intakeSlave.setNeutralMode(NeutralMode.Brake);
 
-        armMotorMaster.setInverted(true);
-        armMotorMaster.setNeutralMode(NeutralMode.Brake);
-        armMotorSlave.setNeutralMode(NeutralMode.Brake);
-
-        //armMotorSlave.configRemoteFeedbackFilter(9, RemoteSensorSource.TalonFX_SelectedSensor, 0);
-        //armMotorSlave.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+        //intakeSlave.configRemoteFeedbackFilter(9, RemoteSensorSource.TalonFX_SelectedSensor, 0);
+        //intakeSlave.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Arm Master Falcon Position", armMotorMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Arm Slave Falcon Position", armMotorSlave.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Arm Slave Falcon Voltage", armMotorSlave.getMotorOutputVoltage());
-        SmartDashboard.putNumber("Arm Master Falcon Voltage", armMotorMaster.getMotorOutputVoltage());
+        SmartDashboard.putNumber("Arm Master Falcon Position", intakeMaster.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Arm Slave Falcon Position", intakeSlave.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Arm Slave Falcon Voltage", intakeSlave.getMotorOutputVoltage());
+        SmartDashboard.putNumber("Arm Master Falcon Voltage", intakeMaster.getMotorOutputVoltage());
         SmartDashboard.putNumber("Arm Up kF", upkF);
         SmartDashboard.putNumber("Arm up cruise velo + accel", cruiseVelocityAccelUp);
         SmartDashboard.putNumber("Arm Down kF", downkF);
@@ -78,16 +74,17 @@ public class ArmSubsystem extends SubsystemBase {
         
     }
 
+
+
     public void goToHome() {
-        armMotorMaster.set(TalonFXControlMode.Position, 100);
-        armMotorSlave.set(TalonFXControlMode.Position, 100);
+        intakeMaster.set(TalonFXControlMode.Position, 100);
+        intakeSlave.set(TalonFXControlMode.Position, 100);
     }
 
     public void dumbGoToHome(){
-            if(armMotorMaster.getSelectedSensorPosition() < -8000){
-                armMotorMaster.set(0.4);
-                armMotorSlave.follow(armMotorMaster);
-                babyNeo.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, 30, false);
+            if(intakeMaster.getSelectedSensorPosition() < -8000){
+                intakeMaster.set(0.4);
+                intakeSlave.follow(intakeMaster);
                 isAtHome = false;
             } else {
                 isAtHome = true;
@@ -95,31 +92,31 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void slowlyGoDown() {
-        armMotorMaster.set( -0.4);
-        armMotorSlave.follow(armMotorMaster);
-        armMotorSlave.setInverted(InvertType.OpposeMaster);
+        intakeMaster.set( -0.4);
+        intakeSlave.follow(intakeMaster);
+        intakeSlave.setInverted(InvertType.OpposeMaster);
     }
 
     public Command slowyGoUp() {
         return runOnce(
             () -> {
-                armMotorMaster.set(TalonFXControlMode.PercentOutput, .1);
-                armMotorSlave.follow(armMotorMaster);
-                armMotorSlave.setInverted(InvertType.OpposeMaster);
+                intakeMaster.set(TalonFXControlMode.PercentOutput, .1);
+                intakeSlave.follow(intakeMaster);
+                intakeSlave.setInverted(InvertType.OpposeMaster);
             }
         );
     }
 
     public void stop(){
-                armMotorMaster.set(TalonFXControlMode.PercentOutput, 0);
-                armMotorSlave.set(TalonFXControlMode.PercentOutput, 0);
+                intakeMaster.set(TalonFXControlMode.PercentOutput, 0);
+                intakeSlave.set(TalonFXControlMode.PercentOutput, 0);
     }
 
     public Command resetSensor() {
         return runOnce(
             () -> {
-                armMotorMaster.setSelectedSensorPosition(0);
-                armMotorSlave.setSelectedSensorPosition(0);
+                intakeMaster.setSelectedSensorPosition(0);
+                intakeSlave.setSelectedSensorPosition(0);
             }
         );
     }
@@ -127,51 +124,51 @@ public class ArmSubsystem extends SubsystemBase {
     public Command pickUpOnGround() {
         return runOnce(
             () -> {
-                armMotorMaster.setSelectedSensorPosition(0);
-                armMotorSlave.setSelectedSensorPosition(0);
+                intakeMaster.setSelectedSensorPosition(0);
+                intakeSlave.setSelectedSensorPosition(0);
             }
         );
     }
 
     public void setPosition(double position) {
         manageMotion(position);
-        armMotorMaster.set(ControlMode.MotionMagic, position);
-        armMotorSlave.follow(armMotorMaster);
-        armMotorSlave.setInverted(InvertType.OpposeMaster);
+        intakeMaster.set(ControlMode.MotionMagic, position);
+        intakeSlave.follow(intakeMaster);
+        intakeSlave.setInverted(InvertType.OpposeMaster);
     }
 
     public Command setVoltage(float voltage) {
         return runOnce(
             () -> {
-                armMotorMaster.set(ControlMode.PercentOutput, voltage);
-                armMotorSlave.follow(armMotorMaster);
-                armMotorSlave.setInverted(InvertType.OpposeMaster);
+                intakeMaster.set(ControlMode.PercentOutput, voltage);
+                intakeSlave.follow(intakeMaster);
+                intakeSlave.setInverted(InvertType.OpposeMaster);
             }
         );
     }
     
     public void manageMotion(double targetPosition) {
-        double currentPosition = armMotorMaster.getSelectedSensorPosition();
+        double currentPosition = intakeMaster.getSelectedSensorPosition();
     
         // going up
         if(currentPosition < targetPosition) {
     
           // set accel and velocity for going up
-          armMotorMaster.configMotionAcceleration(cruiseVelocityAccelUp, 0);
-          armMotorMaster.configMotionCruiseVelocity(cruiseVelocityAccelUp, 0);
+          intakeMaster.configMotionAcceleration(cruiseVelocityAccelUp, 0);
+          intakeMaster.configMotionCruiseVelocity(cruiseVelocityAccelUp, 0);
     
           // select the up gains
-          armMotorMaster.selectProfileSlot(0, 0);
+          intakeMaster.selectProfileSlot(0, 0);
           SmartDashboard.putBoolean("Going Up or Down", true);
     
         } else {
           
           // set accel and velocity for going down
-          armMotorMaster.configMotionAcceleration(cruiseVelocityAccelDown, 0);
-          armMotorMaster.configMotionCruiseVelocity(cruiseVelocityAccelDown, 0);
+          intakeMaster.configMotionAcceleration(cruiseVelocityAccelDown, 0);
+          intakeMaster.configMotionCruiseVelocity(cruiseVelocityAccelDown, 0);
     
           // select the down gains
-          armMotorMaster.selectProfileSlot(1, 0);
+          intakeMaster.selectProfileSlot(1, 0);
           SmartDashboard.putBoolean("Going Up or Down", false);
 
         }
@@ -183,6 +180,6 @@ public class ArmSubsystem extends SubsystemBase {
       }
 
       public double getMasterPos(){
-        return armMotorMaster.getSelectedSensorPosition();
+        return intakeMaster.getSelectedSensorPosition();
       }
 }

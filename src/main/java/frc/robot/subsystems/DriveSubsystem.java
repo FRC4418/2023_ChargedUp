@@ -60,11 +60,9 @@ public class DriveSubsystem extends SubsystemBase {
   
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
-
-  private Vision vision;
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(Vision vision) {
-    this.vision = vision;
+  public DriveSubsystem() {
+
     ahrs.calibrate();
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
@@ -97,9 +95,6 @@ public class DriveSubsystem extends SubsystemBase {
     //System.out.println(getRightEncoderDistance());
     estimator.update(ahrs.getRotation2d()
     , getLeftEncoderDistance(), getRightEncoderDistance());
-    if(vision.hasTargets()){
-      estimator.addVisionMeasurement(vision.getCameraToTarget(), Timer.getFPGATimestamp() - 0.3);
-    }
     SmartDashboard.putString("estimator pose", estimator.getEstimatedPosition().toString());
   }
 
