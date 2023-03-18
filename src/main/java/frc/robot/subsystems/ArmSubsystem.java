@@ -62,12 +62,6 @@ public class ArmSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Arm Master Falcon Position", intakeMaster.getSelectedSensorPosition());
         SmartDashboard.putNumber("Arm Slave Falcon Position", intakeSlave.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Arm Slave Falcon Voltage", intakeSlave.getMotorOutputVoltage());
-        SmartDashboard.putNumber("Arm Master Falcon Voltage", intakeMaster.getMotorOutputVoltage());
-        SmartDashboard.putNumber("Arm Up kF", upkF);
-        SmartDashboard.putNumber("Arm up cruise velo + accel", cruiseVelocityAccelUp);
-        SmartDashboard.putNumber("Arm Down kF", downkF);
-        SmartDashboard.putNumber("Arm Down cruise velo + accel", cruiseVelocityAccelDown);
     }
 
     public void motorPositionControl(int position) {

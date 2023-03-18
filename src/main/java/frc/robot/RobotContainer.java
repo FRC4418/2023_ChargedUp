@@ -5,7 +5,10 @@
 package frc.robot;
 
 import frc.robot.commands.DrivetrainDrive;
+import frc.robot.commands.drivePath;
+import frc.robot.commands.intakeDefault;
 import frc.robot.commands.intakeSpit;
+import frc.robot.commands.intakeSpitAuto;
 import frc.robot.commands.intakeStop;
 import frc.robot.commands.intakeSuck;
 import frc.robot.commands.moveIntakePos;
@@ -79,6 +82,8 @@ public class RobotContainer {
 
   SendableChooser<Command> m_Chooser =  new SendableChooser<>();
 
+  PathPlannerTrajectory driveToSM = PathPlanner.loadPath("Test", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+  PathPlannerTrajectory driveToComm = PathPlanner.loadPath("Back", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -93,7 +98,7 @@ public class RobotContainer {
   }
   public void configureDefualtCommands(){
     driveTrain.setDefaultCommand(new DrivetrainDrive(driveTrain, driver));
-    intake.setDefaultCommand(new intakeStop(intake));
+    intake.setDefaultCommand(new intakeDefault(intake));
     rollers.setDefaultCommand(new rollersStop(rollers));
     
   }
@@ -109,6 +114,14 @@ public class RobotContainer {
 
 
 public Command getAutonomousCommand(boolean isFirstPath){ 
-  return m_Chooser.getSelected();
+  return new SequentialCommandGroup(
+    new moveIntakePos(intake, Constants.intakePositionControl.downPos), 
+    new intakeSpitAuto(rollers), 
+    new drivePath(driveTrain, driveToSM, true, leftPID, rightPID), 
+    new ParallelRaceGroup(
+      new moveIntakePos(intake, Constants.intakePositionControl.downPos), 
+      new intakeSuck(rollers)), 
+    new drivePath(driveTrain, driveToComm, false, leftPID, rightPID), 
+    new intakeSpit(rollers));
 }
 }
