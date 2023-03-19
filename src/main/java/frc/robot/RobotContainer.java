@@ -91,6 +91,8 @@ public class RobotContainer {
     SmartDashboard.putData("Left Auto PID", leftPID);
     SmartDashboard.putData("Right Auto PID", rightPID);
 
+    intake.resetSensor();
+
     
     configureDefualtCommands();
     configureCommnads();
@@ -104,9 +106,9 @@ public class RobotContainer {
   }
   public void configureCommnads(){
     //move intake to low position, VALUE NEEDED
-    spotter.getDPadUp().onTrue(new moveIntakePos(intake, 0));
+    spotter.getDPadUp().onTrue(new moveIntakePos(intake, Constants.intakePositionControl.downPos));
     //move intake to back position, VALUE NEEDED
-    spotter.getDPadDown().onTrue(new moveIntakePos(intake, 0));
+    spotter.getDPadDown().onTrue(new moveIntakePos(intake, Constants.intakePositionControl.farBackPos));
 
     spotter.getLeftButton().whileTrue(new intakeSuck(rollers));
     spotter.getRightButton().whileTrue(new intakeSpit(rollers));
