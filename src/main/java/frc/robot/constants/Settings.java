@@ -20,7 +20,7 @@ public interface Settings {
 
     public interface Drivetrain {
         // If speed is below this, use quick turn
-        SmartNumber BASE_TURNING_SPEED = new SmartNumber("Driver Settings/Base Turn Speed", 0.45);
+        SmartNumber BASE_TURNING_SPEED = new SmartNumber("Driver Settings/Base Turn Speed", 0.6);
         SmartNumber INVERT_ANGLE_THREASHOLD = new SmartNumber(
         "Driver Settings/ Invert Steering, Angle Setpoint Threshold", 0.15);
 
@@ -77,7 +77,7 @@ public interface Settings {
                 double ENCODER_TO_WHEEL = Stages.FIRST_STAGE * Stages.SECOND_STAGE;
             }
 
-            double WHEEL_DIAMETER = Units.inchesToMeters(4);
+            double WHEEL_DIAMETER = Units.inchesToMeters(6);
             double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
             double ENCODER_PULSES_PER_REVOLUTION = 2048;

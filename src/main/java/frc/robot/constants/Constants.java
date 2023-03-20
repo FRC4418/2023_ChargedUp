@@ -69,8 +69,8 @@ public final class Constants {
   public static final class intakePositionControl{
     public static final int downPos = -1000;
     public static final int farBackPos = 1000;
-    public static final double pullSpeed = 0.5;
-    public static final double pushSpeed = -0.5;
+    public static final double pullSpeed = 0.05;
+    public static final double pushSpeed = -0.05;
   } 
 
   public static final class AutoConstants {
