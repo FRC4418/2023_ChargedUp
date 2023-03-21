@@ -60,16 +60,19 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public final AutoGamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);
   public final AutoGamepad spotter = new AutoGamepad(Ports.Gamepad.OPERATOR);
-  
+
   public final DriveSubsystem driveTrain = new DriveSubsystem();
 
   public final ArmSubsystem intake = new ArmSubsystem();
@@ -79,20 +82,26 @@ public class RobotContainer {
   public final Climber climber = new Climber();
 
   private PIDController leftPID = new PIDController(
-    Constants.AutoPIDs.kP, 
-    Constants.AutoPIDs.kI,
-    Constants.AutoPIDs.kD);
+      Constants.AutoPIDs.kP,
+      Constants.AutoPIDs.kI,
+      Constants.AutoPIDs.kD);
   private PIDController rightPID = new PIDController(
-    Constants.AutoPIDs.kP, 
-    Constants.AutoPIDs.kI,
-    Constants.AutoPIDs.kD);
+      Constants.AutoPIDs.kP,
+      Constants.AutoPIDs.kI,
+      Constants.AutoPIDs.kD);
 
-  SendableChooser<Command> m_Chooser =  new SendableChooser<>();
+  SendableChooser<Command> m_Chooser = new SendableChooser<>();
 
-  PathPlannerTrajectory driveToSM = PathPlanner.loadPath("Test", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
-  PathPlannerTrajectory driveToComm = PathPlanner.loadPath("Back", new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+  PathPlannerTrajectory driveToSM = PathPlanner.loadPath("Test",
+      new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,
+          Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+  PathPlannerTrajectory driveToComm = PathPlanner.loadPath("Back",
+      new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,
+          Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     // Configure the trigger bindings
     SmartDashboard.putData("Left Auto PID", leftPID);
@@ -100,17 +109,18 @@ public class RobotContainer {
 
     intake.resetSensor();
 
-    
     configureDefualtCommands();
     configureCommnads();
     PathPlannerServer.startServer(5811);
   }
-  public void configureDefualtCommands(){
+
+  public void configureDefualtCommands() {
     driveTrain.setDefaultCommand(new DrivetrainDrive(driveTrain, driver));
     intake.setDefaultCommand(new intakeDefault(intake));
     rollers.setDefaultCommand(new rollersStop(rollers));
     climber.setDefaultCommand(new climberStop(climber));
   }
+
   public void configureCommnads(){
     //move intake to low position, VALUE NEEDED
     //spotter.getDPadUp().onTrue(new moveIntakePos(intake, Constants.intakePositionControl.downPos));
@@ -123,26 +133,25 @@ public class RobotContainer {
     driver.getDPadUp().whileTrue(new climberUp(climber));
     driver.getDPadDown().whileTrue(new climberDown(climber));
     
-    spotter.getTopButton().whileTrue(new 
+    spotter.getTopButton().whileTrue(new intakeSpit(rollers));
     ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.conePos), new intakeSpit(rollers)));
   
-    spotter.getRightButton().whileTrue(new intakeSuck(rollers));
+    spotter.getRightButton().whileTrue(new intakeSpit(rollers));
 
-    spotter.getBottomButton().whileTrue(new intakeSpit(rollers));
+    spotter.getBottomButton().whileTrue(new intakeSuck(rollers));
 
     spotter.getLeftButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.downPos), new intakeSuck(rollers)));
   }
 
-
-public Command getAutonomousCommand(boolean isFirstPath){ 
-  return new SequentialCommandGroup(
-    new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos), 
-    new intakeSpitAuto(rollers), 
-    new drivePath(driveTrain, driveToSM, true, leftPID, rightPID), 
-    new ParallelRaceGroup(
-      new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos), 
-      new intakeSuck(rollers)), 
-    new drivePath(driveTrain, driveToComm, true, leftPID, rightPID), 
-    new intakeSpit(rollers));
-}
+  public Command getAutonomousCommand(boolean isFirstPath) {
+    return new SequentialCommandGroup(
+        new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos),
+        new intakeSpitAuto(rollers),
+        new drivePath(driveTrain, driveToSM, true, leftPID, rightPID),
+        new ParallelRaceGroup(
+            new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos),
+            new intakeSuck(rollers)),
+        new drivePath(driveTrain, driveToComm, true, leftPID, rightPID),
+        new intakeSpit(rollers));
+  }
 }
