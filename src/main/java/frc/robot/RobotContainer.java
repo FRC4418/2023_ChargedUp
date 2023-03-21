@@ -133,8 +133,8 @@ public class RobotContainer {
     driver.getDPadUp().whileTrue(new climberUp(climber));
     driver.getDPadDown().whileTrue(new climberDown(climber));
     
-    spotter.getTopButton().whileTrue(new intakeSpit(rollers));
-    ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.conePos), new intakeSpit(rollers)));
+    spotter.getTopButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.conePos), new intakeSpit(rollers)));
+    
   
     spotter.getRightButton().whileTrue(new intakeSpit(rollers));
 
