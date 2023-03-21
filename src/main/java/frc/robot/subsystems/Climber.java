@@ -10,21 +10,21 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Rollers extends SubsystemBase {
+public class Climber extends SubsystemBase {
   /** Creates a new rollers. */
-  final WPI_TalonFX rollerSpinner = new WPI_TalonFX(21);
-  public Rollers() {
-    rollerSpinner.configFactoryDefault();
-    rollerSpinner.setSelectedSensorPosition(0);
-    rollerSpinner.setNeutralMode(NeutralMode.Brake);
+  final WPI_TalonFX climber = new WPI_TalonFX(42);
+  public Climber() {
+    climber.configFactoryDefault();
+    climber.setSelectedSensorPosition(0);
+    climber.setNeutralMode(NeutralMode.Brake);
   }
 
   public void intakeSpin(double speed){
-    rollerSpinner.set(ControlMode.PercentOutput, speed);
+    climber.set(speed);
 }
 
 public void intakeStop(){
-    rollerSpinner.set(0);
+    climber.set(0);
 }
 
   @Override

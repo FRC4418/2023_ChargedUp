@@ -1,24 +1,23 @@
- // Copyright (c) FIRST and other WPILib contributors.
+// Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
 
-import javax.swing.text.Position;
+import com.stuypulse.stuylib.util.plot.Playground.Constants;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Rollers;
 
-public class moveIntakePos extends CommandBase {
-  /** Creates a new moveIntakePos. */
-  ArmSubsystem intake = new ArmSubsystem();
-  double position;
+public class climberUp extends CommandBase {
+  /** Creates a new intakeSuck. */
+  Climber climber = new Climber();
 
-  public moveIntakePos(ArmSubsystem intake, double position) {
+  public climberUp(Climber climber) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(intake);
-    this.intake = intake;
-    this.position = position;
+    addRequirements(climber);
+    this.climber = climber;
   }
 
   // Called when the command is initially scheduled.
@@ -28,7 +27,7 @@ public class moveIntakePos extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.setPosition(position);
+    climber.intakeSpin(1.0);
   }
 
   // Called once the command ends or is interrupted.
@@ -38,11 +37,6 @@ public class moveIntakePos extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(intake.getMasterPos() > position +100 || intake.getMasterPos() < position - 100){
-      return true;
-    } else {
-      return false;
-    }
-  //return false;
+    return false;
   }
 }

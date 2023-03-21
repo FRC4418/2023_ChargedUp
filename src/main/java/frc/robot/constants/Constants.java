@@ -67,8 +67,9 @@ public final class Constants {
   }
 
   public static final class intakePositionControl{
-    public static final int downPos = -1000;
-    public static final int farBackPos = 1000;
+    public static final int downPos = -4200;
+    public static final int farBackPos = 1350;
+    public static final int conePos = -3460;
     public static final double pullSpeed = 0.05;
     public static final double pushSpeed = -0.05;
   } 
@@ -80,6 +81,10 @@ public final class Constants {
     // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = 0.7;
+  }
+
+  public static final class driveSpeeds{
+    public static final double maxSpeed = 0.8;
   }
 
   public static final class AutoPIDs{

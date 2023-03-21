@@ -21,15 +21,15 @@ import frc.robot.constants.Constants;
 public class ArmSubsystem extends SubsystemBase {
     boolean isAtHome = false;
 
-    final WPI_TalonFX intakeMaster = new WPI_TalonFX(30);
-    final WPI_TalonFX intakeSlave = new WPI_TalonFX(31); 
+    final WPI_TalonFX intakeMaster = new WPI_TalonFX(20);
+    final WPI_TalonFX intakeSlave = new WPI_TalonFX(22); 
 
-    private int peakVelocityUp = 273600;
+    private int peakVelocityUp = 13600;
     private final double percentOfPeakUp = .75;
     private final double upkF = (percentOfPeakUp * 2048) / (peakVelocityUp * percentOfPeakUp);
     private final double cruiseVelocityAccelUp = peakVelocityUp * percentOfPeakUp;
 
-    private int peakVelocityDown = 3090;
+    private int peakVelocityDown = 13090;
     private final double percentOfPeakDown = .35;
     private final double downkF = (percentOfPeakDown * 2048) / (peakVelocityDown * percentOfPeakDown);
     private final double cruiseVelocityAccelDown = peakVelocityDown * percentOfPeakDown;

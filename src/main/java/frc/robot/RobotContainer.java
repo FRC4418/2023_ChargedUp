@@ -5,6 +5,9 @@
 package frc.robot;
 
 import frc.robot.commands.DrivetrainDrive;
+import frc.robot.commands.climberDown;
+import frc.robot.commands.climberStop;
+import frc.robot.commands.climberUp;
 import frc.robot.commands.drivePath;
 import frc.robot.commands.intakeDefault;
 import frc.robot.commands.intakeSpit;
@@ -18,6 +21,7 @@ import frc.robot.constants.Ports;
 import frc.robot.constants.Constants.AutoConstants;
 import frc.robot.constants.Constants.DriveConstants;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Rollers;
 
@@ -71,6 +75,8 @@ public class RobotContainer {
 
   public final Rollers rollers = new Rollers();
 
+  public final Climber climber = new Climber();
+
   private PIDController leftPID = new PIDController(
     Constants.AutoPIDs.kP, 
     Constants.AutoPIDs.kI,
@@ -102,16 +108,28 @@ public class RobotContainer {
     driveTrain.setDefaultCommand(new DrivetrainDrive(driveTrain, driver));
     intake.setDefaultCommand(new intakeDefault(intake));
     rollers.setDefaultCommand(new rollersStop(rollers));
-    
+    climber.setDefaultCommand(new climberStop(climber));
   }
   public void configureCommnads(){
     //move intake to low position, VALUE NEEDED
-    spotter.getDPadUp().onTrue(new moveIntakePos(intake, Constants.intakePositionControl.downPos));
+    //spotter.getDPadUp().onTrue(new moveIntakePos(intake, Constants.intakePositionControl.downPos));
+    //spotter.getDPadRight().onTrue(new moveIntakePos(intake, Constants.intakePositionControl.conePos));
     //move intake to back position, VALUE NEEDED
-    spotter.getDPadDown().onTrue(new moveIntakePos(intake, Constants.intakePositionControl.farBackPos));
+    //spotter.getDPadDown().onTrue(new moveIntakePos(intake, Constants.intakePositionControl.farBackPos));
 
-    spotter.getLeftButton().whileTrue(new intakeSuck(rollers));
-    spotter.getRightButton().whileTrue(new intakeSpit(rollers));
+    //spotter.getLeftButton().whileTrue(new intakeSuck(rollers));
+    //spotter.getRightButton().whileTrue(new intakeSpit(rollers));
+    driver.getDPadUp().whileTrue(new climberUp(climber));
+    driver.getDPadDown().whileTrue(new climberDown(climber));
+    
+    spotter.getTopButton().whileTrue(new 
+    ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.conePos), new intakeSpit(rollers)));
+  
+    spotter.getRightButton().whileTrue(new intakeSuck(rollers));
+
+    spotter.getBottomButton().whileTrue(new intakeSpit(rollers));
+
+    spotter.getLeftButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.downPos), new intakeSuck(rollers)));
   }
 
 

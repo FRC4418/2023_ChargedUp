@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.constants.Constants;
 import frc.robot.constants.Settings;
 import frc.robot.subsystems.*;
 
@@ -31,15 +32,15 @@ public class DrivetrainDrive extends CommandBase {
     // Mapped to symetric max values from shuffleboard
     this.speedSetpoint = IStream.create(() -> driver2.getRightTrigger() - driver2.getLeftTrigger())
         .filtered(
-            x -> SLMath.map(x, -1, 1, -0.4, 0.4),
+            x -> SLMath.map(x, -1, 1, -Constants.driveSpeeds.maxSpeed, Constants.driveSpeeds.maxSpeed),
             x -> SLMath.deadband(x, 0.0),
             x -> SLMath.spow(x, 2.0),
             new LowPassFilter(0.25));
 
     this.angleSetpoint = IStream.create(() -> -driver2.getLeftX())
         .filtered(
-            x -> SLMath.map(x, -1, 1, -0.4,
-                0.4),
+            x -> SLMath.map(x, -1, 1, -Constants.driveSpeeds.maxSpeed,
+            Constants.driveSpeeds.maxSpeed),
             x -> SLMath.deadband(x, 0.10),
             x -> SLMath.spow(x, 1.0),
             new LowPassFilter(0.005));
