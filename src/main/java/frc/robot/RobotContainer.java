@@ -15,6 +15,7 @@ import frc.robot.commands.intakeSpitAuto;
 import frc.robot.commands.intakeStop;
 import frc.robot.commands.intakeSuck;
 import frc.robot.commands.moveIntakePos;
+import frc.robot.commands.moveIntakePosAuto;
 import frc.robot.commands.rollersStop;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Ports;
@@ -135,13 +136,13 @@ public class RobotContainer {
 
 public Command getAutonomousCommand(boolean isFirstPath){ 
   return new SequentialCommandGroup(
-    new moveIntakePos(intake, Constants.intakePositionControl.downPos), 
+    new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos), 
     new intakeSpitAuto(rollers), 
     new drivePath(driveTrain, driveToSM, true, leftPID, rightPID), 
     new ParallelRaceGroup(
-      new moveIntakePos(intake, Constants.intakePositionControl.downPos), 
+      new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos), 
       new intakeSuck(rollers)), 
-    new drivePath(driveTrain, driveToComm, false, leftPID, rightPID), 
+    new drivePath(driveTrain, driveToComm, true, leftPID, rightPID), 
     new intakeSpit(rollers));
 }
 }
