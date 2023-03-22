@@ -32,14 +32,14 @@ public class DrivetrainDrive extends CommandBase {
     // Mapped to symetric max values from shuffleboard
     this.speedSetpoint = IStream.create(() -> driver2.getRightTrigger() - driver2.getLeftTrigger())
         .filtered(
-            x -> SLMath.map(x, -1, 1, -Constants.driveSpeeds.maxSpeed, Constants.driveSpeeds.maxSpeed),
+            x -> SLMath.map(x, 1, -1, -Constants.driveSpeeds.maxSpeed, Constants.driveSpeeds.maxSpeed),
             x -> SLMath.deadband(x, 0.0),
             x -> SLMath.spow(x, 2.0),
             new LowPassFilter(0.25));
 
     this.angleSetpoint = IStream.create(() -> -driver2.getLeftX())
         .filtered(
-            x -> SLMath.map(x, -1, 1, -Constants.driveSpeeds.maxSpeed,
+            x -> SLMath.map(x, 1, -1, -Constants.driveSpeeds.maxSpeed,
             Constants.driveSpeeds.maxSpeed),
             x -> SLMath.deadband(x, 0.10),
             x -> SLMath.spow(x, 1.0),
@@ -58,7 +58,7 @@ public class DrivetrainDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    drivetrain.impulseDrive(speedSetpoint.get(), angleSetpoint.get());
+    drivetrain.impulseDrive(-speedSetpoint.get(), angleSetpoint.get());
   }
 
   // Called once the command ends or is interrupted.

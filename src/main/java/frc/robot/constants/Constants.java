@@ -75,8 +75,8 @@ public final class Constants {
   } 
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 0.3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 0.1;
+    public static final double kMaxSpeedMetersPerSecond = 0.6;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 0.2;
 
     // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
     public static final double kRamseteB = 2;
@@ -88,9 +88,9 @@ public final class Constants {
   }
 
   public static final class AutoPIDs{
-    public static final double kP = 2.6;
-    public static final double kI = 3.8;
-    public static final double kD = 0.25;
+    public static final double kP = 7.255;
+    public static final double kI = 0.1;
+    public static final double kD = 0.0;
   }
 
 public static Transform3d kCameraToRobot = new Transform3d(new Translation3d(0.56,0.25,0), new Rotation3d(0,0,0));

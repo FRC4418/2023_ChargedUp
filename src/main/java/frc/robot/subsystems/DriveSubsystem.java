@@ -31,12 +31,14 @@ public class DriveSubsystem extends SubsystemBase {
   
   public DifferentialDrivePoseEstimator estimator;
 //  The motors on the left side of the drive.
-  final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(2);
-  final WPI_TalonFX leftBackMotor = new WPI_TalonFX(3);
-  MotorControllerGroup m_leftMotors = new MotorControllerGroup(leftFrontMotor, leftBackMotor);
+  public final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(4);
+  public final WPI_TalonFX leftBackMotor = new WPI_TalonFX(1);
+  public MotorControllerGroup m_leftMotors = new MotorControllerGroup(leftFrontMotor, leftBackMotor);
 
-  final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(1);
-  final WPI_TalonFX rightBackMotor = new WPI_TalonFX(4);
+  public final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(3);
+  public final WPI_TalonFX rightBackMotor = new WPI_TalonFX(2);
+
+  private int inverted = 0;
   
   // final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(38);
   // final WPI_TalonFX leftBackMotor = new WPI_TalonFX(00);
@@ -44,7 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // final WPI_TalonFX rightFrontMotor = new WPI_TalonFX(36);
   // final WPI_TalonFX rightBackMotor = new WPI_TalonFX(39);
-  MotorControllerGroup m_rightMotors = new MotorControllerGroup(rightFrontMotor, rightBackMotor);
+  public MotorControllerGroup m_rightMotors = new MotorControllerGroup(rightFrontMotor, rightBackMotor);
 
   // The robot's drive
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
@@ -64,6 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
 
     ahrs.calibrate();
+    ahrs.reset();
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
@@ -96,6 +99,11 @@ public class DriveSubsystem extends SubsystemBase {
     estimator.update(ahrs.getRotation2d()
     , getLeftEncoderDistance(), getRightEncoderDistance());
     SmartDashboard.putString("estimator pose", estimator.getEstimatedPosition().toString());
+  }
+
+  public void changeInvert(){
+    m_rightMotors.setInverted(true);
+    m_leftMotors.setInverted(false);
   }
 
   /**
@@ -179,7 +187,7 @@ public void impulseDrive(double xSpeed, double zRotation) {
    *
    * @param pose The pose to which to set the odometry.
    */
-  public void resetOdometry(Pose2d pose) {
+  public void  resetOdometry(Pose2d pose) {
     //m_odometry.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), new Pose2d());
     
     estimator.resetPosition(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), pose);

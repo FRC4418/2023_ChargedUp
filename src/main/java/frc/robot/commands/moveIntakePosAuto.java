@@ -38,7 +38,7 @@ public class moveIntakePosAuto extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(intake.getMasterPos() > position +300){
+    if(intake.getMasterPos() > position +200){
       return false;
     } else {
       return true;
