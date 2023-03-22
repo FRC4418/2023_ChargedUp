@@ -24,12 +24,12 @@ public class ArmSubsystem extends SubsystemBase {
     final WPI_TalonFX intakeMaster = new WPI_TalonFX(20);
     final WPI_TalonFX intakeSlave = new WPI_TalonFX(22); 
 
-    private int peakVelocityUp = 13600;
+    private int peakVelocityUp = 33600;
     private final double percentOfPeakUp = .75;
     private final double upkF = (percentOfPeakUp * 2048) / (peakVelocityUp * percentOfPeakUp);
     private final double cruiseVelocityAccelUp = peakVelocityUp * percentOfPeakUp;
 
-    private int peakVelocityDown = 13090;
+    private int peakVelocityDown = 33090;
     private final double percentOfPeakDown = .35;
     private final double downkF = (percentOfPeakDown * 2048) / (peakVelocityDown * percentOfPeakDown);
     private final double cruiseVelocityAccelDown = peakVelocityDown * percentOfPeakDown;

@@ -26,7 +26,7 @@ public class intakeSpit extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    rollers.intakeSpin(0.4);
+    rollers.intakeSpin(1.0);
   }
 
   // Called once the command ends or is interrupted.

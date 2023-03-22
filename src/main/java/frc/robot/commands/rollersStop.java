@@ -21,12 +21,14 @@ public class rollersStop extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    rollers.intakeStop();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    rollers.intakeSpin(0.0);
+    rollers.intakeStop();
   }
 
   // Called once the command ends or is interrupted.

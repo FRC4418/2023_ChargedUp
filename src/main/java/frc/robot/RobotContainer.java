@@ -110,13 +110,20 @@ public class RobotContainer {
           Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared));
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
+   * @return 
    */
+
+   private final Command balAuto = new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.5), drivePath(true, "longOnCS"));
+
   public RobotContainer() {
 
     
     driveTrain.ahrs.reset();
     m_Chooser.setDefaultOption("Do Nothings", new doNothing());
+    //
+    //m_chooser.addOption("1 + bal", balAuto);
 
+    SmartDashboard.putData(m_chooser);
     // Configure the trigger bindings
     SmartDashboard.putData("Left Auto PID", leftPID);
     SmartDashboard.putData("Right Auto PID", rightPID);
@@ -193,7 +200,7 @@ public class RobotContainer {
 public Command drivePath(boolean isFirstPath, String nameOfPath) {
   // An example command will be run in autonomous
 
-  PathPlannerTrajectory drivePath1 = PathPlanner.loadPath(nameOfPath, new PathConstraints(0.8, 1.2));
+  PathPlannerTrajectory drivePath1 = PathPlanner.loadPath(nameOfPath, new PathConstraints(1.5, 3.0));
   PathPlannerServer.sendActivePath(drivePath1.getStates());
 
   return new SequentialCommandGroup(
@@ -227,18 +234,20 @@ public Command drivePath(boolean isFirstPath, String nameOfPath) {
     //TWO PIEACE AUTO
     return new SequentialCommandGroup(
         new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos),
-        new intakeSpinAuto(rollers, -0.5),
+        new intakeSpinAuto(rollers, 0.5),
+        new moveIntakePosAuto(intake, Constants.intakePositionControl.farBackPos),
         drivePath(true, "Test"),
         //BROKE HERE
-        new ParallelRaceGroup(
+        
             new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos),
-            new intakeSpinAuto(rollers, 0.5)),
+            new intakeSpinAuto(rollers, -0.5),
+            new moveIntakePosAuto(intake, Constants.intakePositionControl.farBackPos),
         drivePath(false, "Back"),
+        new moveIntakePos(intake, 0),
         new intakeSpit(rollers));
   
     //LOW SCORE + BALANCE
     //return new SequentialCommandGroup(new intakeSpitAuto(rollers), drivePath(true, "longOnCS"));
       
-      //new intakeSpitAuto(rollers),
   }
 }
