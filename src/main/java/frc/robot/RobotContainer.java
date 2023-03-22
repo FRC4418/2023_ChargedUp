@@ -10,8 +10,8 @@ import frc.robot.commands.climberStop;
 import frc.robot.commands.climberUp;
 import frc.robot.commands.doNothing;
 import frc.robot.commands.intakeDefault;
+import frc.robot.commands.intakeSpinAuto;
 import frc.robot.commands.intakeSpit;
-import frc.robot.commands.intakeSpitAuto;
 import frc.robot.commands.intakeStop;
 import frc.robot.commands.intakeSuck;
 import frc.robot.commands.moveIntakePos;
@@ -227,12 +227,12 @@ public Command drivePath(boolean isFirstPath, String nameOfPath) {
     //TWO PIEACE AUTO
     return new SequentialCommandGroup(
         new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos),
-        new intakeSpitAuto(rollers),
+        new intakeSpinAuto(rollers, -0.5),
         drivePath(true, "Test"),
         //BROKE HERE
         new ParallelRaceGroup(
             new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos),
-            new intakeSuck(rollers)),
+            new intakeSpinAuto(rollers, 0.5)),
         drivePath(false, "Back"),
         new intakeSpit(rollers));
   
