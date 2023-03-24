@@ -236,7 +236,7 @@ public Command drivePath(boolean isFirstPath, String nameOfPath) {
 public Command drivePathCS(boolean isFirstPath, String nameOfPath) {
   // An example command will be run in autonomous
 
-  PathPlannerTrajectory drivePath1 = PathPlanner.loadPath(nameOfPath, new PathConstraints(1.5, .0));
+  PathPlannerTrajectory drivePath1 = PathPlanner.loadPath(nameOfPath, new PathConstraints(1.5, 2.0));
   PathPlannerServer.sendActivePath(drivePath1.getStates());
 
   return new SequentialCommandGroup(
@@ -282,6 +282,6 @@ public Command drivePathCS(boolean isFirstPath, String nameOfPath) {
     //     new intakeSpit(rollers));
   
     //LOW SCORE + BALANCE
-    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePathCS(true, "longOnCS"));
+    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePathCS(true, "longOnCS"),  new balance(driveTrain));
   }
 }

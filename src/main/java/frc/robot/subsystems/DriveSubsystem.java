@@ -285,7 +285,7 @@ public void impulseDrive(double xSpeed, double zRotation) {
   }
 
   public void autoBalanceDrive(){
-    tankDrive(speed,speed);
+    arcadeDrive(speed,0);
   }
 
   /**
