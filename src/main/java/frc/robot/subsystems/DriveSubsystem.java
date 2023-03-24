@@ -39,6 +39,10 @@ public class DriveSubsystem extends SubsystemBase {
   public final WPI_TalonFX rightBackMotor = new WPI_TalonFX(2);
 
   private int inverted = 0;
+
+  private autoBalance balancer = new autoBalance();
+
+  private double speed;
   
   // final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(38);
   // final WPI_TalonFX leftBackMotor = new WPI_TalonFX(00);
@@ -99,6 +103,8 @@ public class DriveSubsystem extends SubsystemBase {
     estimator.update(ahrs.getRotation2d()
     , getLeftEncoderDistance(), getRightEncoderDistance());
     SmartDashboard.putString("estimator pose", estimator.getEstimatedPosition().toString());
+    speed = balancer.autoBalanceRoutine();
+    SmartDashboard.putNumber("Speed from balancer", speed);
   }
 
   public void changeInvert(){
@@ -276,6 +282,10 @@ public void impulseDrive(double xSpeed, double zRotation) {
    */
   public double getHeading() {
     return ahrs.getRotation2d().getDegrees()+360;
+  }
+
+  public void autoBalanceDrive(){
+    tankDrive(speed,speed);
   }
 
   /**

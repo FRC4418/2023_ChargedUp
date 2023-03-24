@@ -12,18 +12,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
   /** Creates a new rollers. */
-  final WPI_TalonFX climber = new WPI_TalonFX(42);
+  final WPI_TalonFX climber = new WPI_TalonFX(31);
   public Climber() {
     climber.configFactoryDefault();
     climber.setSelectedSensorPosition(0);
     climber.setNeutralMode(NeutralMode.Brake);
   }
 
-  public void intakeSpin(double speed){
+  public void climberSpin(double speed){
     climber.set(speed);
 }
 
-public void intakeStop(){
+public void climberStop(){
     climber.set(0);
 }
 

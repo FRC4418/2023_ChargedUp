@@ -67,9 +67,9 @@ public final class Constants {
   }
 
   public static final class intakePositionControl{
-    public static final int downPos = -4200;
-    public static final int farBackPos = 1350;
-    public static final int conePos = -3460;
+    public static final int downPos = -5800;
+    public static final int farBackPos = -2200;
+    public static final int conePos = -4000;
     public static final double pullSpeed = 0.05;
     public static final double pushSpeed = -0.05;
   } 

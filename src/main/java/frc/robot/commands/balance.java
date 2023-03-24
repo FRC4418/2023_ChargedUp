@@ -4,20 +4,16 @@
 
 package frc.robot.commands;
 
-import com.stuypulse.stuylib.util.plot.Playground.Constants;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Rollers;
+import frc.robot.subsystems.DriveSubsystem;
 
-public class climberDown extends CommandBase {
-  /** Creates a new intakeSuck. */
-  Climber climber = new Climber();
-
-  public climberDown(Climber climber) {
+public class balance extends CommandBase {
+  /** Creates a new balance. */
+  private DriveSubsystem driveTrain;
+  public balance(DriveSubsystem driveTrain) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(climber);
-    this.climber = climber;
+    addRequirements(driveTrain);
+    this.driveTrain = driveTrain;
   }
 
   // Called when the command is initially scheduled.
@@ -27,7 +23,7 @@ public class climberDown extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climber.climberSpin(-0.3);
+    driveTrain.autoBalanceDrive();
   }
 
   // Called once the command ends or is interrupted.

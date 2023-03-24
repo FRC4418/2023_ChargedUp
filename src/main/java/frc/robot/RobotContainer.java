@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.commands.DrivetrainDrive;
+import frc.robot.commands.balance;
 import frc.robot.commands.climberDown;
 import frc.robot.commands.climberStop;
 import frc.robot.commands.climberUp;
@@ -25,6 +26,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Rollers;
+import frc.robot.subsystems.autoBalance;
 
 import java.util.List;
 
@@ -47,6 +49,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -74,6 +77,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public final AutoGamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);
   public final AutoGamepad spotter = new AutoGamepad(Ports.Gamepad.OPERATOR);
+
+  private double speed;
 
   public final DriveSubsystem driveTrain = new DriveSubsystem();
 
@@ -132,7 +137,6 @@ public class RobotContainer {
 
     configureDefualtCommands();
     configureCommnads();
-    PathPlannerServer.startServer(5811);
   }
 
   public void configureDefualtCommands() {
@@ -229,25 +233,55 @@ public Command drivePath(boolean isFirstPath, String nameOfPath) {
 );
 }
 
+public Command drivePathCS(boolean isFirstPath, String nameOfPath) {
+  // An example command will be run in autonomous
+
+  PathPlannerTrajectory drivePath1 = PathPlanner.loadPath(nameOfPath, new PathConstraints(1.5, .0));
+  PathPlannerServer.sendActivePath(drivePath1.getStates());
+
+  return new SequentialCommandGroup(
+    new InstantCommand(() -> {
+      // Reset odometry for the first path you run during auto
+      if(isFirstPath){
+        Pose2d e = drivePath1.getInitialPose();  
+        //Pose2d flippedPose = new Pose2d(e.getX(),e.getY(),e.getRotation().minus(Rotation2d.fromDegrees(180)));
+        //driveTrain.resetOdometry(flippedPose);
+        driveTrain.resetOdometry(e);
+      }
+    }),
+    new PPRamseteCommand(
+        drivePath1, 
+        driveTrain::getPose, // Pose supplier
+        new RamseteController(),  
+        new SimpleMotorFeedforward(0.14971, 0.0073732, 0.0092238),
+        driveTrain.kinematics, // DifferentialDriveKinematics
+        driveTrain::getWheelSpeeds, // `DifferentialDriveWheelSpeeds supplier
+        leftPID, // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+        rightPID, // Right controller (usually the same values as left controller)
+        driveTrain::tankDriveVolts, // Voltage bicnsumer
+        false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+        driveTrain // Requires this drive subsystem
+    )
+);
+}
 
   public Command getAutonomousCommand(boolean isFirstPath) {
     //TWO PIEACE AUTO
-    return new SequentialCommandGroup(
-        new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos),
-        new intakeSpinAuto(rollers, 0.5),
-        new moveIntakePosAuto(intake, Constants.intakePositionControl.farBackPos),
-        drivePath(true, "Test"),
-        //BROKE HERE
+    // return new SequentialCommandGroup(
+    //     new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos),
+    //     new intakeSpinAuto(rollers, 0.5),
+    //     new moveIntakePosAuto(intake, Constants.intakePositionControl.farBackPos),
+    //     drivePath(true, "Test"),
+    //     //BROKE HERE
         
-            new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos),
-            new intakeSpinAuto(rollers, -0.5),
-            new moveIntakePosAuto(intake, Constants.intakePositionControl.farBackPos),
-        drivePath(false, "Back"),
-        new moveIntakePos(intake, 0),
-        new intakeSpit(rollers));
+    //         new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos),
+    //         new intakeSpinAuto(rollers, -0.5),
+    //         new moveIntakePosAuto(intake, Constants.intakePositionControl.farBackPos),
+    //     drivePath(false, "Back"),
+    //     new moveIntakePos(intake, 0),
+    //     new intakeSpit(rollers));
   
     //LOW SCORE + BALANCE
-    //return new SequentialCommandGroup(new intakeSpitAuto(rollers), drivePath(true, "longOnCS"));
-      
+    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePathCS(true, "longOnCS"));
   }
 }

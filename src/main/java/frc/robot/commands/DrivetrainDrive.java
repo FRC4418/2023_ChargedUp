@@ -39,7 +39,7 @@ public class DrivetrainDrive extends CommandBase {
 
     this.angleSetpoint = IStream.create(() -> -driver2.getLeftX())
         .filtered(
-            x -> SLMath.map(x, 1, -1, -Constants.driveSpeeds.maxSpeed,
+            x -> SLMath.map(x, 1, -0.8, -Constants.driveSpeeds.maxSpeed,
             Constants.driveSpeeds.maxSpeed),
             x -> SLMath.deadband(x, 0.10),
             x -> SLMath.spow(x, 1.0),
