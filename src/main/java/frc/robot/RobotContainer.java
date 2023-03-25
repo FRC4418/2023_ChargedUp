@@ -158,14 +158,14 @@ public class RobotContainer {
     driver.getDPadUp().whileTrue(new climberUp(climber));
     driver.getDPadDown().whileTrue(new climberDown(climber));
     
-    spotter.getTopButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.conePos), new intakeSpit(rollers)));
+    spotter.getTopButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.conePos), new intakeSpit(rollers, 0.75)));
     
   
-    spotter.getRightButton().whileTrue(new intakeSpit(rollers));
+    spotter.getRightButton().whileTrue(new intakeSpit(rollers, 0.5));
 
-    spotter.getBottomButton().whileTrue(new intakeSuck(rollers));
+    spotter.getBottomButton().whileTrue(new intakeSuck(rollers, 0.5));
 
-    spotter.getLeftButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.downPos), new intakeSuck(rollers)));
+    spotter.getLeftButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.downPos), new intakeSuck(rollers, -0.75)));
   }
 
 //   public Command drivePath(boolean isFirstPath,String nameOfPath, DriveSubsystem driveTrain, PIDController leftPID,PIDController rightPID){
@@ -282,6 +282,8 @@ public Command drivePathCS(boolean isFirstPath, String nameOfPath) {
     //     new intakeSpit(rollers));
   
     //LOW SCORE + BALANCE
-    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePathCS(true, "onCS"),  new balance(driveTrain));
+    //return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePathCS(true, "onCS"),  new balance(driveTrain));
+    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePath(true, "Out"));
   }
+
 }
