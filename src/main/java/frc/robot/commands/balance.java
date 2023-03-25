@@ -10,6 +10,11 @@ import frc.robot.subsystems.DriveSubsystem;
 public class balance extends CommandBase {
   /** Creates a new balance. */
   private DriveSubsystem driveTrain;
+  private double currentPitch;
+  private double pitchThreshhold = 0.6;
+  private double velocity;
+  private boolean isFinished;
+  private int z = 100;
   public balance(DriveSubsystem driveTrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain);
@@ -18,14 +23,32 @@ public class balance extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    isFinished = false;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveTrain.autoBalanceDrive();
-  }
+    currentPitch = driveTrain.ahrs.getPitch();
 
+    if(Math.abs(currentPitch) > pitchThreshhold){
+      velocity = (-(currentPitch) / 62);
+      driveTrain.tankDrive(-velocity, -velocity);
+    } else if(Math.abs(currentPitch) > pitchThreshhold && Math.abs(currentPitch) < 3d){
+      velocity = (-(currentPitch) / 20);
+    } else if(currentPitch > pitchThreshhold && currentPitch < 0.3){
+      driveTrain.tankDrive(velocity,velocity);
+    } else {
+    if (z == 100) {
+      driveTrain.tankDrive(0,0);
+      z = 0;
+  } 
+    else {
+      z += 1;
+  }
+}
+}
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}

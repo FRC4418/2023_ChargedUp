@@ -282,6 +282,6 @@ public Command drivePathCS(boolean isFirstPath, String nameOfPath) {
     //     new intakeSpit(rollers));
   
     //LOW SCORE + BALANCE
-    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePathCS(true, "longOnCS"),  new balance(driveTrain));
+    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePathCS(true, "onCS"),  new balance(driveTrain));
   }
 }
