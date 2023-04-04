@@ -12,11 +12,13 @@ import frc.robot.subsystems.Rollers;
 public class intakeSuck extends CommandBase {
   /** Creates a new intakeSuck. */
   Rollers rollers = new Rollers();
+  double speed;
 
-  public intakeSuck(Rollers rollers) {
+  public intakeSuck(Rollers rollers, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(rollers);
     this.rollers = rollers;
+    this.speed = speed;
   }
 
   // Called when the command is initially scheduled.
@@ -26,7 +28,7 @@ public class intakeSuck extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    rollers.intakeSpin(-0.5);
+    rollers.intakeSpin(speed);
   }
 
   // Called once the command ends or is interrupted.

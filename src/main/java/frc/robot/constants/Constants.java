@@ -67,7 +67,7 @@ public final class Constants {
   }
 
   public static final class intakePositionControl{
-    public static final int downPos = -5800;
+    public static final int downPos = -5700;
     public static final int farBackPos = -2200;
     public static final int conePos = -4000;
     public static final double pullSpeed = 0.05;
@@ -84,11 +84,11 @@ public final class Constants {
   }
 
   public static final class driveSpeeds{
-    public static final double maxSpeed = 0.8;
+    public static final double maxSpeed = 0.5;
   }
 
   public static final class AutoPIDs{
-    public static final double kP = 4.855;
+    public static final double kP = 5.155;
     public static final double kI = 0.1;
     public static final double kD = 0.05;
   }
