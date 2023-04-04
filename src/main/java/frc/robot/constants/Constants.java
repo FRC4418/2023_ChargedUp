@@ -84,7 +84,7 @@ public final class Constants {
   }
 
   public static final class driveSpeeds{
-    public static final double maxSpeed = 0.8;
+    public static final double maxSpeed = 0.5;
   }
 
   public static final class AutoPIDs{

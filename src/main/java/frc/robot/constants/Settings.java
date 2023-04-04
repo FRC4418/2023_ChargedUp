@@ -1,6 +1,5 @@
 package frc.robot.constants;
 
-
 // import com.stuypulse.stuylib.network.SmartBoolean;
 import com.stuypulse.stuylib.network.SmartNumber;
 import com.stuypulse.stuylib.network.SmartString;
@@ -8,7 +7,6 @@ import com.stuypulse.stuylib.network.SmartString;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 
 /*-
  * File containing tunable settings for every subsystem on the robot.
@@ -20,16 +18,16 @@ public interface Settings {
 
     public interface Drivetrain {
         // If speed is below this, use quick turn
-        SmartNumber BASE_TURNING_SPEED = new SmartNumber("Driver Settings/Base Turn Speed", 0.6);
+        SmartNumber BASE_TURNING_SPEED = new SmartNumber("Driver Settings/Base Turn Speed", 0.2);
         SmartNumber INVERT_ANGLE_THREASHOLD = new SmartNumber(
-        "Driver Settings/ Invert Steering, Angle Setpoint Threshold", 0.15);
+                "Driver Settings/ Invert Steering, Angle Setpoint Threshold", 0.15);
 
         // Low Pass Filter and deadband for Driver Controls
         SmartNumber SPEED_DEADBAND = new SmartNumber("Driver Settings/Speed Deadband", 0.00);
         SmartNumber ANGLE_DEADBAND = new SmartNumber("Driver Settings/Turn Deadband", 0.10);
-        
+
         SmartNumber MAX_SPEED_ANGLE = new SmartNumber("Driver Settings/Max Speed Angle", 0.85);
-        SmartNumber MAX_SPEED = new SmartNumber("Driver Settings/Max Speed", 1.0);
+        SmartNumber MAX_SPEED = new SmartNumber("Driver Settings/Max Speed", 0.3);
 
         SmartNumber SPEED_POWER = new SmartNumber("Driver Settings/Speed Power", 2.0);
         SmartNumber ANGLE_POWER = new SmartNumber("Driver Settings/Turn Power", 1.0);
@@ -41,7 +39,7 @@ public interface Settings {
         SmartNumber TIME_MOVING = new SmartNumber("Driver Settings/Time Driving Auto", 0.0);
 
         // Width of the robot
-        double TRACK_WIDTH = Units.inchesToMeters(26.9); 
+        double TRACK_WIDTH = Units.inchesToMeters(26.9);
 
         public interface Motion {
 
@@ -81,9 +79,8 @@ public interface Settings {
             double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
             double ENCODER_PULSES_PER_REVOLUTION = 2048;
-            double ENCODER_DISTANCE_PER_PULSE =
-                    (WHEEL_CIRCUMFERENCE / ENCODER_PULSES_PER_REVOLUTION)
-                            * GearRatio.ENCODER_TO_WHEEL;
+            double ENCODER_DISTANCE_PER_PULSE = (WHEEL_CIRCUMFERENCE / ENCODER_PULSES_PER_REVOLUTION)
+                    * GearRatio.ENCODER_TO_WHEEL;
         }
     }
 }
