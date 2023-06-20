@@ -66,8 +66,12 @@ public final class Constants {
     public static final double yOffset = 0.0;
   }
 
+  public static final class demo{
+    public static final double rollerSpeed = 0.6;
+  }
+
   public static final class intakePositionControl{
-    public static final int downPos = -5700;
+    public static final int downPos = -6600;
     public static final int farBackPos = -2200;
     public static final int conePos = -4000;
     public static final double pullSpeed = 0.05;

@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
@@ -66,6 +67,7 @@ public class DriveSubsystem extends SubsystemBase {
   
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
+  
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
 
@@ -90,6 +92,7 @@ public class DriveSubsystem extends SubsystemBase {
     resetEncoders();
     m_odometry = new DifferentialDriveOdometry(ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance());
   
+
     estimator = new DifferentialDrivePoseEstimator(kinematics, ahrs.getRotation2d(), getLeftEncoderDistance(), getRightEncoderDistance(), new Pose2d());
 
   }

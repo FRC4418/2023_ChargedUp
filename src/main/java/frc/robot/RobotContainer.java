@@ -155,17 +155,16 @@ public class RobotContainer {
 
     //spotter.getLeftButton().whileTrue(new intakeSuck(rollers));
     //spotter.getRightButton().whileTrue(new intakeSpit(rollers));
-    driver.getDPadUp().whileTrue(new climberUp(climber));
-    driver.getDPadDown().whileTrue(new climberDown(climber));
+  
     
-    spotter.getTopButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.conePos), new intakeSpit(rollers, 0.75)));
+    driver.getTopButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.downPos), new intakeSpit(rollers, -0.75)));
     
   
-    spotter.getRightButton().whileTrue(new intakeSpit(rollers, 0.5));
+    driver.getRightButton().whileTrue(new intakeSpit(rollers, 0.5));
 
-    spotter.getBottomButton().whileTrue(new intakeSuck(rollers, 0.5));
+    driver.getBottomButton().whileTrue(new intakeSuck(rollers, -0.5));
 
-    spotter.getLeftButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.downPos), new intakeSuck(rollers, -0.75)));
+    //driver.getLeftButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.downPos), new intakeSuck(rollers, -0.75)));
   }
 
 //   public Command drivePath(boolean isFirstPath,String nameOfPath, DriveSubsystem driveTrain, PIDController leftPID,PIDController rightPID){
