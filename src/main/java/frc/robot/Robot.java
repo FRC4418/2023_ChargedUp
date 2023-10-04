@@ -26,6 +26,11 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private final Field2d m_field = new Field2d();
   private RobotContainer m_robotContainer;
+  
+  private static final String kDefaultAuto = "Default";
+  private static final String kCustomAuto = "1 Piece Short";
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -33,7 +38,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-        PathPlannerServer.startServer(5811);
+    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    m_chooser.addOption("1 Pieace", kCustomAuto);
+    SmartDashboard.putData("Auto choices", m_chooser);
+    
+    PathPlannerServer.startServer(5811);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
