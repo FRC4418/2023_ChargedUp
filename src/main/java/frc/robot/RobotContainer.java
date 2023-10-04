@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.commands.DrivetrainDrive;
+import frc.robot.commands.OnePieaceAuto;
 import frc.robot.commands.balance;
 import frc.robot.commands.climberDown;
 import frc.robot.commands.climberStop;
@@ -79,8 +80,6 @@ public class RobotContainer {
   public final AutoGamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);
   public final AutoGamepad spotter = new AutoGamepad(Ports.Gamepad.OPERATOR);
 
-  private double speed;
-
   public final DriveSubsystem driveTrain = new DriveSubsystem();
 
   public final ArmSubsystem intake = new ArmSubsystem();
@@ -91,8 +90,6 @@ public class RobotContainer {
 
   private Timer timer = new Timer();
 
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
   private PIDController leftPID = new PIDController(
       Constants.AutoPIDs.kP,
       Constants.AutoPIDs.kI,
@@ -101,8 +98,6 @@ public class RobotContainer {
       Constants.AutoPIDs.kP,
       Constants.AutoPIDs.kI,
       Constants.AutoPIDs.kD);
-
-  SendableChooser<Command> m_Chooser = new SendableChooser<>();
 
   PathPlannerTrajectory driveToSM = PathPlanner.loadPath("Test",
       new PathConstraints(Constants.AutoConstants.kMaxSpeedMetersPerSecond,
@@ -118,18 +113,17 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    * @return 
    */
-
-   private final Command balAuto = new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.5), driveTrain.drivePath(true, "longOnCS"));
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  private static final String defaultAuto = "Default";
+  private static final String OnePiece = "1Piece";
 
   public RobotContainer() {
-
-    
     driveTrain.ahrs.reset();
-    m_Chooser.setDefaultOption("Do Nothings", new doNothing());
+    m_chooser.setDefaultOption("Do Nothings", "defaultAuto");
+    m_chooser.addOption("1 Piece", "OnePiece");
     //
     //m_chooser.addOption("1 + bal", balAuto);
 
-    SmartDashboard.putData(m_chooser);
     // Configure the trigger bindings
     SmartDashboard.putData("Left Auto PID", leftPID);
     SmartDashboard.putData("Right Auto PID", rightPID);
@@ -219,7 +213,18 @@ public Command drivePathCS(boolean isFirstPath, String nameOfPath) {
   
     //LOW SCORE + BALANCE
     //return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePathCS(true, "onCS"),  new balance(driveTrain));
-    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), driveTrain.drivePath(true, "Back"));
+    //return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), driveTrain.drivePath(true, "1 Piece Balence"));
+    String m_autoSelected = m_chooser.getSelected();
+    switch (m_autoSelected) {
+      case defaultAuto:
+        // Put custom auto code here
+        return new InstantCommand();
+      case OnePiece:
+      default:
+        // Put default auto code here
+        return new OnePieaceAuto(driveTrain, rollers, intake);   
+    }
+  
   }
 
 }
