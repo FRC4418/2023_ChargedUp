@@ -36,6 +36,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.pathplanner.lib.server.PathPlannerServer;
+import com.stuypulse.stuylib.control.feedforward.Feedforward.Drivetrain;
 import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -118,7 +119,7 @@ public class RobotContainer {
    * @return 
    */
 
-   private final Command balAuto = new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.5), drivePath(true, "longOnCS"));
+   private final Command balAuto = new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.5), driveTrain.drivePath(true, "longOnCS"));
 
   public RobotContainer() {
 
@@ -167,71 +168,6 @@ public class RobotContainer {
 
     spotter.getLeftButton().whileTrue(new ParallelCommandGroup(new moveIntakePos(intake, Constants.intakePositionControl.downPos), new intakeSuck(rollers, -0.75)));
   }
-
-//   public Command drivePath(boolean isFirstPath,String nameOfPath, DriveSubsystem driveTrain, PIDController leftPID,PIDController rightPID){
-   
-//     PathPlannerTrajectory path = PathPlanner.loadPath(nameOfPath, new PathConstraints(0.6, 0.3));
-//     PathPlannerServer.sendActivePath(path.getStates());
-
-
-//     return new SequentialCommandGroup(
-//       new InstantCommand(() -> {
-//         // Reset odometry for the first path you run during autoPathPlannerServer.sendActivePath(path.getStates());
-//         //driveTrain.resetEncoders();
-//         timer.start();
-//         if(isFirstPath){
-//           Pose2d e = path.getInitialPose();  
-//           //Pose2d flippedPose = new Pose2d(e.getX(),e.getY(),e.getRotation().minus(Rotation2d.fromDegrees(180)));
-//           //driveTrain.resetOdometry(flippedPose);
-//           driveTrain.resetOdometry(e);
-//         }
-//       }),
-//       new PPRamseteCommand(
-//           path, 
-//           driveTrain::getPose, // Pose supplier
-//           new RamseteController(),  
-//           new SimpleMotorFeedforward(0.14971, 0.0073732, 0.0092238),
-//           driveTrain.kinematics, // DifferentialDriveKinematics
-//           driveTrain::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
-//           leftPID, // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-//           rightPID, // Right controller (usually the same values as left controller)
-//           driveTrain::tankDriveVolts, // Voltage bicnsumer
-//           false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-//           driveTrain // Requires this drive subsystem
-//       )
-//   );
-// }
-public Command drivePath(boolean isFirstPath, String nameOfPath) {
-  // An example command will be run in autonomous
-
-  PathPlannerTrajectory drivePath1 = PathPlanner.loadPath(nameOfPath, new PathConstraints(1.5, 3.0));
-  PathPlannerServer.sendActivePath(drivePath1.getStates());
-
-  return new SequentialCommandGroup(
-    new InstantCommand(() -> {
-      // Reset odometry for the first path you run during auto
-      if(isFirstPath){
-        Pose2d e = drivePath1.getInitialPose();  
-        //Pose2d flippedPose = new Pose2d(e.getX(),e.getY(),e.getRotation().minus(Rotation2d.fromDegrees(180)));
-        //driveTrain.resetOdometry(flippedPose);
-        driveTrain.resetOdometry(e);
-      }
-    }),
-    new PPRamseteCommand(
-        drivePath1, 
-        driveTrain::getPose, // Pose supplier
-        new RamseteController(),  
-        new SimpleMotorFeedforward(0.14971, 0.0073732, 0.0092238),
-        driveTrain.kinematics, // DifferentialDriveKinematics
-        driveTrain::getWheelSpeeds, // `DifferentialDriveWheelSpeeds supplier
-        leftPID, // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-        rightPID, // Right controller (usually the same values as left controller)
-        driveTrain::tankDriveVolts, // Voltage bicnsumer
-        false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-        driveTrain // Requires this drive subsystem
-    )
-);
-}
 
 public Command drivePathCS(boolean isFirstPath, String nameOfPath) {
   // An example command will be run in autonomous
@@ -283,7 +219,7 @@ public Command drivePathCS(boolean isFirstPath, String nameOfPath) {
   
     //LOW SCORE + BALANCE
     //return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePathCS(true, "onCS"),  new balance(driveTrain));
-    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePath(true, "Out"));
+    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), driveTrain.drivePath(true, "1 Piece Short"));
   }
 
 }

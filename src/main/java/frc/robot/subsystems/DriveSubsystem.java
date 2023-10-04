@@ -7,8 +7,16 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPRamseteCommand;
+import com.pathplanner.lib.server.PathPlannerServer;
 import com.stuypulse.stuylib.math.SLMath;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
@@ -24,7 +32,11 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -62,6 +74,16 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   //private final Gyro m_gyro = new ADXRS450_Gyro();
   public final AHRS ahrs = new AHRS();
+
+  private PIDController leftPID = new PIDController(
+    Constants.AutoPIDs.kP,
+    Constants.AutoPIDs.kI,
+    Constants.AutoPIDs.kD);
+private PIDController rightPID = new PIDController(
+    Constants.AutoPIDs.kP,
+    Constants.AutoPIDs.kI,
+    Constants.AutoPIDs.kD);
+
 
   
   // Odometry class for tracking robot pose
@@ -296,5 +318,38 @@ public void impulseDrive(double xSpeed, double zRotation) {
   public double getTurnRate() {
     return ahrs.getRate();
   }
+
+  public Command drivePath(boolean isFirstPath, String nameOfPath) {
+    // An example command will be run in autonomous
+  
+    PathPlannerTrajectory drivePath1 = PathPlanner.loadPath(nameOfPath, new PathConstraints(1.5, 3.0));
+    PathPlannerServer.sendActivePath(drivePath1.getStates());
+  
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> {
+        // Reset odometry for the first path you run during auto
+        if(isFirstPath){
+          Pose2d e = drivePath1.getInitialPose();  
+          //Pose2d flippedPose = new Pose2d(e.getX(),e.getY(),e.getRotation().minus(Rotation2d.fromDegrees(180)));
+          //driveTrain.resetOdometry(flippedPose);
+          this.resetOdometry(e);
+        }
+      }),
+      new PPRamseteCommand(
+          drivePath1, 
+          this::getPose, // Pose supplier
+          new RamseteController(),  
+          new SimpleMotorFeedforward(0.14971, 0.0073732, 0.0092238),
+          this.kinematics, // DifferentialDriveKinematics
+          this::getWheelSpeeds, // `DifferentialDriveWheelSpeeds supplier
+          leftPID, // Left controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+          rightPID, // Right controller (usually the same values as left controller)
+          this::tankDriveVolts, // Voltage bicnsumer
+          false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+          this // Requires this drive subsystem
+      )
+  );
+  }
+  
 
 }
