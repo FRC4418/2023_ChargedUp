@@ -10,6 +10,11 @@
       "/SmartDashboard/SendableChooser[1]": "String Chooser"
     },
     "windows": {
+      "/SmartDashboard/Auto choices": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "window": {
           "visible": true

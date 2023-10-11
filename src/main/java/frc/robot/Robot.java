@@ -12,6 +12,10 @@ import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import frc.robot.commands.OnePieaceAuto;
+import frc.robot.commands.shootAndBalance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,8 +33,9 @@ public class Robot extends TimedRobot {
   
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "1 Piece Short";
+  private static final String shootAndBalance = "Balance";
   private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  //private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -38,9 +43,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("1 Pieace", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+    // m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    // m_chooser.addOption("1 Pieace", kCustomAuto);
+    // m_chooser.addOption("Shoot and Balance", shootAndBalance);
+    // SmartDashboard.putData("Auto choices", m_chooser);
     
     PathPlannerServer.startServer(5811);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
@@ -61,7 +67,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
+    // commands, running already-scheduled commands, shootAndBalancremoving finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
@@ -77,9 +83,23 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    // String m_autoSelected = m_chooser.getSelected();
+    // switch (m_autoSelected) {
+    //   case kDefaultAuto:
+    //     default:  
+    //   // Put custom auto code here
+    //     new InstantCommand().schedule();
+    //   case kCustomAuto:
+    //     // Put default auto code here
+    //     new OnePieaceAuto(m_robotContainer.driveTrain, m_robotContainer.rollers, m_robotContainer.intake).schedule();   
+
+    //   case shootAndBalance:
+    //     new shootAndBalance(m_robotContainer.driveTrain, m_robotContainer.rollers, m_robotContainer.intake).schedule();
+    //   }
+
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand(true);
-
-
+    m_autonomousCommand.schedule();
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

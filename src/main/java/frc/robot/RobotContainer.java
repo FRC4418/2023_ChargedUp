@@ -19,6 +19,7 @@ import frc.robot.commands.intakeSuck;
 import frc.robot.commands.moveIntakePos;
 import frc.robot.commands.moveIntakePosAuto;
 import frc.robot.commands.rollersStop;
+import frc.robot.commands.shootAndBalance;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Ports;
 import frc.robot.constants.Constants.AutoConstants;
@@ -116,12 +117,14 @@ public class RobotContainer {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final String defaultAuto = "Default";
   private static final String OnePiece = "1Piece";
+  private static final String shootAndBalance = "Balance";
 
   public RobotContainer() {
     driveTrain.ahrs.reset();
     m_chooser.setDefaultOption("Do Nothings", "defaultAuto");
     m_chooser.addOption("1 Piece", "OnePiece");
-    //
+    m_chooser.addOption("Shoot and Balance", "shootAndBalance");
+    
     //m_chooser.addOption("1 + bal", balAuto);
 
     // Configure the trigger bindings
@@ -214,17 +217,20 @@ public Command drivePathCS(boolean isFirstPath, String nameOfPath) {
     //LOW SCORE + BALANCE
     //return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), drivePathCS(true, "onCS"),  new balance(driveTrain));
     //return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.3), driveTrain.drivePath(true, "1 Piece Balence"));
-    String m_autoSelected = m_chooser.getSelected();
-    switch (m_autoSelected) {
-      case defaultAuto:
-        // Put custom auto code here
-        return new InstantCommand();
-      case OnePiece:
-      default:
-        // Put default auto code here
-        return new OnePieaceAuto(driveTrain, rollers, intake);   
-    }
-  
+    // String m_autoSelected = m_chooser.getSelected();
+    // switch (m_autoSelected) {
+    //   case defaultAuto:
+    //     default:  
+    //   // Put custom auto code here
+    //     return new shootAndBalance(driveTrain, rollers, intake);
+    //   case OnePiece:
+    //     // Put default auto code here
+    //     return new OnePieaceAuto(driveTrain, rollers, intake);   
+
+    //   case shootAndBalance:
+    //     return new InstantCommand();
+    // }
+    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.5), driveTrain.drivePath(true, "OnCS"), new balance(driveTrain));
   }
 
 }
