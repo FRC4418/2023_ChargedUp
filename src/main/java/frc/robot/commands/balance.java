@@ -14,7 +14,7 @@ public class balance extends CommandBase {
   private double pitchThreshhold = 0.6;
   private double velocity;
   private boolean isFinished;
-  private int z = 100;
+  private int z = 0;
   public balance(DriveSubsystem driveTrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain);
@@ -33,7 +33,7 @@ public class balance extends CommandBase {
     currentPitch = driveTrain.ahrs.getPitch();
 
     if(Math.abs(currentPitch) > pitchThreshhold){
-      velocity = (-(currentPitch) / 62);
+      velocity = (-(currentPitch) / 65);
       driveTrain.tankDrive(-velocity, -velocity);
     } else if(Math.abs(currentPitch) > pitchThreshhold && Math.abs(currentPitch) < 3d){
       velocity = (-(currentPitch) / 20);
@@ -43,9 +43,9 @@ public class balance extends CommandBase {
     if (z == 100) {
       driveTrain.tankDrive(0,0);
       z = 0;
-  } 
+  }
     else {
-      z += 1;
+      z += 2;
   }
 }
 }

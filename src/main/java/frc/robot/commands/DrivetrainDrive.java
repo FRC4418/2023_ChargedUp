@@ -35,8 +35,8 @@ public class DrivetrainDrive extends CommandBase {
 
     this.angleSetpoint = IStream.create(() -> -driver2.getLeftX())
         .filtered(
-            x -> SLMath.map(x, -1, 1, -Settings.Drivetrain.MAX_SPEED_ANGLE.get(),
-                Settings.Drivetrain.MAX_SPEED_ANGLE.get()),
+            x -> SLMath.map(x, -1, 1, Settings.Drivetrain.MAX_SPEED_ANGLE.get(),
+                -Settings.Drivetrain.MAX_SPEED_ANGLE.get()),
             x -> SLMath.deadband(x, Settings.Drivetrain.ANGLE_DEADBAND.get()),
             x -> SLMath.spow(x, Settings.Drivetrain.ANGLE_POWER.get()),
             new LowPassFilter(Settings.Drivetrain.ANGLE_FILTER));

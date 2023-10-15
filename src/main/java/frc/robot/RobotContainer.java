@@ -200,9 +200,10 @@ public Command drivePathCS(boolean isFirstPath, String nameOfPath) {
 
   public Command getAutonomousCommand(boolean isFirstPath) {
     //SCORE | BALANCE
-    //return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.5), driveTrain.drivePath(true, "OnCS"), new balance(driveTrain));
-  
+    return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.5), driveTrain.drivePath(true, "OnCS"), new balance(driveTrain));
+ 
     //SCORE | DRIVE OUT OF COMMUNITY | BALANCE
+    
     //return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.5), driveTrain.drivePath(true, "1 Piece Balence"), new balance(driveTrain));
   
     //SCORE | DRIVE OUT LONG AND TRY TO PICK 2ND | MUST BE ON END!!
@@ -210,17 +211,17 @@ public Command drivePathCS(boolean isFirstPath, String nameOfPath) {
     
     //SCORE | DRIVE OUT SHORT AND PICK 2ND | MUST BE ON END!!
     //return new SequentialCommandGroup(new intakeSpinAuto(rollers, 0.5), driveTrain.drivePath(isFirstPath, "1 Piece Short"), new ParallelCommandGroup(new intakeSuck(rollers, -0.5), new moveIntakePos(intake, Constants.intakePositionControl.downPos)));
-  
+   
     //SCORE | LONG 2 PIECE | LONG END
-    return new SequentialCommandGroup(
-      new intakeSpinAuto(rollers, 0.5),
-      driveTrain.drivePath(true, "2 Piece Long Out"),
-      new ParallelCommandGroup(
-        new intakeSuck(rollers, 0.5), 
-        new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos)),
-      driveTrain.drivePath(false, "2 Piece Long In"),
-      new intakeSpit(rollers, 0.5)
-    );
+    // return new SequentialCommandGroup(
+    //   new intakeSpinAuto(rollers, 0.5),
+    //   driveTrain.drivePath(true, "2 Piece Long Out"),
+    //   new ParallelCommandGroup(
+    //     new intakeSuck(rollers, 0.5), 
+    //     new moveIntakePosAuto(intake, Constants.intakePositionControl.downPos)),
+    //   driveTrain.drivePath(false, "2 Piece Long In"),
+    //   new intakeSpit(rollers, 0.5)
+    //);
   }
 
 }

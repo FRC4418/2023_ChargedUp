@@ -90,9 +90,9 @@ private PIDController rightPID = new PIDController(
   private final DifferentialDriveOdometry m_odometry;
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-
-    ahrs.calibrate();
     ahrs.reset();
+    ahrs.calibrate();
+
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
@@ -125,8 +125,8 @@ private PIDController rightPID = new PIDController(
     estimator.update(ahrs.getRotation2d()
     , getLeftEncoderDistance(), getRightEncoderDistance());
     SmartDashboard.putString("estimator pose", estimator.getEstimatedPosition().toString());
-    speed = balancer.autoBalanceRoutine();
     SmartDashboard.putNumber("Speed from balancer", speed);
+    System.out.println(ahrs.getRotation2d().toString());
   }
 
   public void changeInvert(){
